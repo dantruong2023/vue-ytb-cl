@@ -34,7 +34,7 @@ export default {
                         link : "https://youtu.be/r842vn9Os0Y"
                     },
                     {
-                        name :"Ông bà già tao lo hết",
+                        name :"Ông bà già tao lo hết - Bình Gold",
                         image  : "obgtlh.jpg",
                         avatar  : "mylove.jpg",
                         view :"1.4M" ,
