@@ -65,7 +65,7 @@ export default {
                         gif  : "obgtlh.gif"
                     },
                     {
-                        name :"Tiếng pháo tiễn người",
+                        name :"Tiếng pháo tiễn người - Hùng Quân",
                         image  : "tptn.jpg",
                         avatar  : "hungquan.jpg",
                         view :"186K" ,
