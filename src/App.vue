@@ -1,9 +1,8 @@
 <template>
   <div id="app">
-    <Header id="header" msg="Welcome to Your Vue.js App"></Header>
+    <Header id="header" :search.sync="filter"></Header>
     <SideBar id="sidebar"></SideBar>
-    <ContentVideo id="content" msg="Hello" :data="dataVideo"></ContentVideo>
-    
+    <ContentVideo id="content" :data="data" :key="keyChild"></ContentVideo>
   </div>
 </template>
 
@@ -20,8 +19,28 @@ export default {
     SideBar,
     ContentVideo,
   },
+  watch:{
+    filter : function(){
+      var self = this
+      var search = this.filter
+      self.data = []
+      for(var item of self.dataVideo)
+      {
+        if(item !== undefined && item.name.toLowerCase().startsWith(search.toLowerCase(),0)==true)
+          self.data.push(item)
+      }
+      self.keyChild = Math.ceil(Math.random() * 1000)%123 + ''
+    }
+  },
+  created: function() {
+    this.filter = ''
+  }
+  ,
   data(){
     return {
+      keyChild : '',
+      data : [],
+      filter : 'vipvay',
       dataVideo : [
                     {
                         name :"Bật chế độ bay lên - Bình Gold",
@@ -31,7 +50,8 @@ export default {
                         time :"2 months",
                         author : "Đan Trường",
                         check : true,
-                        link : "https://youtu.be/r842vn9Os0Y"
+                        link : "https://youtu.be/r842vn9Os0Y",
+                        gif : 'bcdbl.gif'
                     },
                     {
                         name :"Ông bà già tao lo hết",
@@ -41,7 +61,8 @@ export default {
                         time :"8 months",
                         author : "Thu Trang",
                         check : true,
-                        link : "https://youtu.be/siEhdhxiqHg"
+                        link : "https://youtu.be/siEhdhxiqHg",
+                        gif  : "obgtlh.gif"
                     },
                     {
                         name :"Tiếng pháo tiễn người",
@@ -51,7 +72,8 @@ export default {
                         time :"13 days",
                         author : "Hùng Quân",
                         check : true,
-                        link : "https://youtu.be/KI6TFG0-mTY"
+                        link : "https://youtu.be/KI6TFG0-mTY",
+                        gif : "tptn.gif"
                     },
                     {
                         name :"Love potion number 9",
@@ -61,7 +83,8 @@ export default {
                         time :"11 months",
                         author : "Dolce Music",
                         check : false,
-                        link : "https://youtu.be/-RqwGKFJbsE"
+                        link : "https://youtu.be/-RqwGKFJbsE",
+                        gif : "lpn9.gif"
                     },
                     {
                         name :"Bốc bát họ | Bình Gold",
@@ -71,7 +94,8 @@ export default {
                         time :"3 months",
                         author : "Bình Gold",
                         check : true,
-                        link : "https://youtu.be/gQ9U94eH7xQ"
+                        link : "https://youtu.be/gQ9U94eH7xQ",
+                        gif : 'bbh.gif'
                     },
                     {
                         name :"Hết nhạc con về",
@@ -81,7 +105,8 @@ export default {
                         time :"2 months",
                         author : "1967 Music",
                         check : false,
-                        link : "https://youtu.be/CKgEdz3paa0"
+                        link : "https://youtu.be/CKgEdz3paa0",
+                        gif : "hncv.gif"
                     },
                     {
                         name :"Chạnh lòng thương cô",
@@ -91,7 +116,8 @@ export default {
                         time :"10 months",
                         author : "HOA HỒNG DẠI MUSIC",
                         check : false,
-                        link : "https://youtu.be/xIyIP-fR7Xg"
+                        link : "https://youtu.be/xIyIP-fR7Xg",
+                        gif : "cltc.gif"
                     },
                     {
                         name :"Sang Xịn Mịn REMIX - Gill ft. Kewtiie x CUKAK",
@@ -101,7 +127,8 @@ export default {
                         time :"6 months",
                         author : "Djay Boy",
                         check : false,
-                        link : "https://youtu.be/g4HygG78cT0"
+                        link : "https://youtu.be/g4HygG78cT0",
+                        gif : "sxm.gif"
                     },
                     {
                         name :"Goodie - Tbynz",
@@ -111,7 +138,8 @@ export default {
                         time :"1 year",
                         author : "Dinz Music",
                         check : false,
-                        link : "https://youtu.be/o-e68Xjs2As"
+                        link : "https://youtu.be/o-e68Xjs2As",
+                        gif : "goodies.gif"
                     },
                     {
                         name :"Lạc Trôi Remix - Sơn Tùng M-TP",
@@ -121,7 +149,8 @@ export default {
                         time :"3 years",
                         author : "Sơn Tùng MTP",
                         check : true,
-                        link : "https://youtu.be/Llw9Q6akRo4"
+                        link : "https://youtu.be/Llw9Q6akRo4",
+                        gif : "lt.gif"
                     },
                     {
                         name :"Lạc Chốn Hồng Trần Remix Lã Phong Lâm x Đại Mèo",
@@ -131,7 +160,8 @@ export default {
                         time :"9 months",
                         author : "BiliBili",
                         check : false,
-                        link : "https://youtu.be/LJo0d9sASFI"
+                        link : "https://youtu.be/LJo0d9sASFI",
+                        gif : "lcht.gif"
                     },
                     {
                         name :"ANH CHỈ CÓ 102 (02) | VINARAP - JP LONG x KUZZ",
@@ -141,7 +171,8 @@ export default {
                         time :"5 months",
                         author : "Ansez",
                         check : false,
-                        link : "https://youtu.be/L5nVIDA5zFY"
+                        link : "https://youtu.be/L5nVIDA5zFY",
+                        gif : "acc102.gif"
                     },
                     {
                         name :"Em iu - Andree Right Hand ft. Wxrdie x Bình Gold x 2pillz",
@@ -151,7 +182,8 @@ export default {
                         time :"11 months",
                         author : "Andree Right Hand",
                         check : true,
-                        link : "https://youtu.be/p7YGAKeDPkM"
+                        link : "https://youtu.be/p7YGAKeDPkM",
+                        gif : "ei.gif"
                     },
                     {
                         name :"Ơ Động Đất À? Không Phải Đấy Là Bọn Anh Đang Đi Lên - VÂN RUNG",
@@ -161,7 +193,8 @@ export default {
                         time :"3 months",
                         author : "Orinn Music",
                         check : false,
-                        link : "https://youtu.be/5kT9DlHYiOE"
+                        link : "https://youtu.be/5kT9DlHYiOE",
+                        gif : "odda.gif"
                     },
                     {
                         name :"16 Typh - Người Chơi Hệ Đẹp「Cukak Remix」",
@@ -171,7 +204,8 @@ export default {
                         time :"5 months",
                         author : "1967 Music",
                         check : false,
-                        link : "https://youtu.be/1VnsC7SgkBI"
+                        link : "https://youtu.be/1VnsC7SgkBI",
+                        gif : "nchd.gif"
                     },
                     {
                         name :"Đoạn Tuyệt Nàng Đi Ver2 Remix",
@@ -181,7 +215,8 @@ export default {
                         time :"1 year",
                         author : "Frexs Record",
                         check : false,
-                        link : "https://youtu.be/1Y5AxyERJsA"
+                        link : "https://youtu.be/1Y5AxyERJsA",
+                        gif : "dtnd.gif"
                     },
                     {
                         name :"Ông Cháu Ơi Về Đội Của Chú | WanGanh Remix",
@@ -191,7 +226,8 @@ export default {
                         time :"8 months",
                         author : "Nhạc sàn remix",
                         check : false,
-                        link : "https://youtu.be/erRTlNs8OkM"
+                        link : "https://youtu.be/erRTlNs8OkM",
+                        gif : "ocovdcc.gif"
                     },
                     {
                         name :"Phong dạ hành Remix",
@@ -201,7 +237,8 @@ export default {
                         time :"3 months",
                         author : "DJ AM Official",
                         check : false,
-                        link : "https://youtu.be/bXZgaAc2BB8"
+                        link : "https://youtu.be/bXZgaAc2BB8",
+                        gif : "pdh.gif"
                     }
                 ],
     }

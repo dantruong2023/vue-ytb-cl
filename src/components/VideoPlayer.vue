@@ -1,6 +1,6 @@
 <template>
     <div class="item-video" v-on:click="navigate()">
-        <img v-bind:src="link_image" alt="" >
+        <img v-bind:src="imgshow" v-on:mouseover="hover()" v-on:mouseleave="dishover()" alt="" >
         <div class="content-video">
             <div class="row" style="margin : 0px;">
                 <div class="avatar col col-2">
@@ -37,7 +37,8 @@
             image : String,
             author : String,
             check : Boolean,
-            link : String
+            link : String,
+            gif : String
         },
         computed : {
             title : function(){
@@ -52,13 +53,30 @@
             },
             link_src : function(){
                 return this.link
+            },
+            link_gif : function(){
+                return "/assets/img/video/" + this.gif
             }
         },
         methods : {
             navigate : function(){
                 console.log(this.link);
                 window.location.href = this.link
+            },
+            hover : function(){
+                this.imgshow = this.link_gif
+            },
+            dishover : function(){
+                this.imgshow = this.link_image
             }
+        },
+        data() {
+            return {
+                imgshow : ''
+            }
+        },
+        created: function(){
+            this.imgshow = this.link_image
         }
     }
 </script>

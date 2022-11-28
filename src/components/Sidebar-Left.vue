@@ -1,18 +1,18 @@
 <template>
 <div class="sidebar">
-    <div class="home active">
+    <div class="home" v-bind:class="[{active : selected === 0}]" @click="change(0)">
         <i class="ti-home"></i>
         <p>Home</p>
     </div>
-    <div class="short">
+    <div class="short" v-bind:class="[{active : selected === 1}]" @click="change(1)">
         <i class="ti-video-clapper"></i>
         <p>Shorts</p>
     </div>
-    <div class="sub">
+    <div class="sub" v-bind:class="[{active : selected === 2}]" @click="change(2)">
         <i class="ti-user"></i>
         <p>Subscriptions</p>
     </div>
-    <div class="library">
+    <div class="library" v-bind:class="[{active : selected === 3}]" @click="change(3)">
         <i class="ti-gallery"></i>
         <p>Library</p>
     </div>
@@ -24,7 +24,12 @@
         name : 'Sidebar_Left',
         data() {
             return {
-
+                selected : 0
+            }
+        },
+        methods : {
+            change : function(number){
+                this.selected = number
             }
         }
             

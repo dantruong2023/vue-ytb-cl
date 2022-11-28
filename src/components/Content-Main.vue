@@ -1,5 +1,6 @@
 <template>
     <div>
+        <template v-if="great4">
         <div class="rows" v-for="idx in Math.ceil(this.length/4)" v-bind:key="idx">
             <div v-for="i in 4" :key="i">
                 <VideoPlayer           
@@ -11,7 +12,24 @@
                 :author="data[i-1+(idx-1)*4].author"
                 :check="data[i-1+(idx-1)*4].check"
                 :link="data[i-1+(idx-1)*4].link"
+                :gif="data[i-1+(idx-1)*4].gif"
                 v-if="data[i-1+(idx-1)*4]"
+                ></VideoPlayer>
+            </div>
+        </div>
+        </template>
+        <div class="rows" v-if="great4===false">
+            <div v-for="i in 4" :key="i">
+                <VideoPlayer           
+                :name = "data[i-1].name"
+                :image = "data[i-1].image"
+                :avatar = "data[i-1].avatar"
+                :view="data[i-1].view" 
+                :time="data[i-1].time"
+                :author="data[i-1].author"
+                :check="data[i-1].check"
+                :link="data[i-1].link"
+                v-if="data[i-1]"
                 ></VideoPlayer>
             </div>
         </div>
@@ -24,14 +42,14 @@
         name : 'ContentMain',
         data(){
             return {
-                list_video : [],
                 length : 0,
-                index : 0
+                index : 0,
+                great4 : false
             }
         },
         props:{
             msg : String,
-            data : Array
+            data : Array,
         },
         computed : {
             
@@ -41,7 +59,7 @@
         },
         created : function() {
             this.length = this.data.length
-            console.log(this.length)
+            this.great4 = this.length > 4 
             this.index = 0
         },
         components : {

@@ -8,8 +8,8 @@
     
     <div class="search-bar">
       <i class="ti-search search-icon"></i>
-      <input type="text" class="input-bar" placeholder="Search">
-      <button title="Search" class="btn-search-bar"><i class="ti-search"></i></button>
+      <input type="text" class="input-bar" placeholder="Search" v-model="keyword">
+      <button title="Search" class="btn-search-bar" @click="change()"><i class="ti-search"></i></button>
     </div>
 
     <div class="user">
@@ -26,7 +26,22 @@
 export default {
   name: 'HelloWorld',
   props: {
-    msg: String
+    search : String
+  },
+  data(){
+    return {
+        keyword : ''
+    }
+  },
+  methods:{
+    change : function(){
+      this.$emit('update:search', this.keyword)
+    }
+  },
+  watch:{
+      keyword : function(){
+        if(this.keyword == '') this.change()
+      }
   }
 }
 </script>
