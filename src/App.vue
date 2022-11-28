@@ -54,7 +54,7 @@ export default {
                         gif : 'bcdbl.gif'
                     },
                     {
-                        name :"Ông bà già tao lo hết",
+                        name :"Ông bà già tao lo hết - Bình Gold",
                         image  : "obgtlh.jpg",
                         avatar  : "mylove.jpg",
                         view :"1.4M" ,
