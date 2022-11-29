@@ -1,7 +1,7 @@
 <template>
     <div>
         <div class="categories">
-            <div class="category" v-for="i in tag.length" :key="i" :class="[{categoryActive : index == i-1}]" @click="filterbyTag(i-1,tag[i-1])">
+            <div class="category" v-for="i in tag.length > 10 ? 10 : tag.length" :key="i" :class="[{categoryActive : index == i-1}]" @click="filterbyTag(i-1,tag[i-1])">
                 {{ tag[i-1] }}
             </div>
         </div>
@@ -50,14 +50,15 @@
             return {
                 length : 0,
                 great4 : false,
-                tag : ['All','Music','Bình Gold']
+                // tag : ['All','Music','Bình Gold']
             }
         },
         props:{
             msg : String,
             data : Array,
             index : Number,
-            filterTag : String
+            filterTag : String,
+            tag : Array
         },
         watch : {
 
@@ -69,8 +70,15 @@
             }
         },
         created : function() {
+            var self = this
             this.length = this.data.length
             this.great4 = this.length > 4 
+            this.data.forEach(function(item){
+                if(self.tag.length >= 10) {
+                    return
+                }
+                if(self.tag.includes(item.author) == false) self.tag.push(item.author)
+            })
         },
         components : {
             VideoPlayer

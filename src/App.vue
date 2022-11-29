@@ -7,7 +7,8 @@
     :data="data" 
     :filterTag.sync="filterTag" 
     :key="keyChild"
-    :index.sync="indexTag">
+    :index.sync="indexTag"
+    :tag="tag">
   </ContentVideo>
   </div>
 </template>
@@ -32,12 +33,17 @@ export default {
       var self = this
       var search = this.filter
       self.data = []
+      if(search == ''){
+          this.indexTag = 0
+          self.keyChild = Math.ceil(Math.random() * 1000)%123 + ''
+      }
       for(var item of self.dataVideo)
       {
-        if(item !== undefined && item.name.toLowerCase().startsWith(search.toLowerCase(),0)==true)
+        if(item !== undefined && (item.name.toLowerCase().startsWith(search.toLowerCase(),0)==true || item.tag.includes(search) == true))
           self.data.push(item)
       }
       self.keyChild = Math.ceil(Math.random() * 1000)%123 + ''
+      this.indexTag = 0
     },
     filterTag : function(){
       var self = this
@@ -52,12 +58,18 @@ export default {
     }
   },
   created: function() {
+    var self = this
     this.filter = ''
+    this.dataVideo.forEach(function(item){
+        item.tag.push(item.author)
+        if(self.tag.includes(item.author) == false) self.tag.push(item.author)
+    })
   }
   ,
   data(){
     return {
       indexTag : 0,
+      tag : ['All','Music'],
       idSelect : 0,
       isExtend : false,
       keyChild : '',
@@ -369,6 +381,8 @@ html::-webkit-scrollbar {
 }
 
 #content{
+  position: relative;
+  z-index: 0;
   margin-left : 5%;
   margin-top : 0px;
   /* margin-top : 60px; */

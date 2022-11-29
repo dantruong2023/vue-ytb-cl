@@ -16,8 +16,63 @@
       <div class="img">
         <img src="/assets/img/avatar/avatar.jpg" alt="" width="32px" height="32px">
       </div>
-      <i title="Notifications" class="ti-bell"></i>
-      <i title="Create" class="ti-video-camera"></i>
+      <i title="Notifications" class="ti-bell" :class="[{active : formNoti},{formShow : formNoti == true}]" @click="show('noti')">
+        <div class="form noti" :class="[{show : formNoti==true}]">
+          <div class="row">
+            <div class="userNoti">
+              <img  src="/assets/img/avatar/binhgold.jfif" alt="">
+            </div>
+            <div class="content">
+              <!-- Max 98 length ...  -->
+              <div class="content-noti">Bình Gold đã tải lên: Bật chế độ bay lên - Bình Gold</div>
+              <p class="content-time">2 tháng trước</p>
+            </div>
+            <div class="video">
+              <img src="/assets/img/video/bcdbl.jpg" alt="">
+            </div> 
+          </div>
+
+          <div class="row">
+            <div class="userNoti">
+              <img  src="/assets/img/avatar/ansez.png" alt="">
+            </div>
+            <div class="content">
+              <!-- Max 98 length ...  -->
+              <div class="content-noti">Ansez đã tải lên: ANH CHỈ CÓ 102 (02) | VINARAP - JP LONG x KUZZ</div>
+              <p class="content-time">5 tháng trước</p>
+            </div>
+            <div class="video">
+              <img src="/assets/img/video/acc102.jpg" alt="">
+            </div> 
+          </div>
+
+          <div class="row">
+            <div class="userNoti">
+              <img  src="/assets/img/avatar/dolce.jpg" alt="">
+            </div>
+            <div class="content">
+              <!-- Max 98 length ...  -->
+              <div class="content-noti">Dolce Music đã tải lên: Love potion number 9</div>
+              <p class="content-time">11 tháng trước</p>
+            </div>
+            <div class="video">
+              <img src="/assets/img/video/lpn9.jpg" alt="">
+            </div> 
+          </div>
+        </div>
+      </i>
+      <i title="Create" class="ti-video-camera" :class="[{active : formUpload},{formShow : formUpload == true}]" @click="show('upload')">
+        <div class="form upload" :class="[{show : formUpload==true}]">
+          <div class="row">
+            <i class="ti-upload"></i>
+            <span>Upload video</span>
+          </div>
+          <div class="row">
+            <i class="ti-eye"></i>
+            <span>Go live</span>
+          </div>
+        </div>
+      </i>
     </div>
   </div>
 </template>
@@ -31,7 +86,9 @@ export default {
   },
   data(){
     return {
-        keyword : ''
+        keyword : '',
+        formNoti : false,
+        formUpload : false
     }
   },
   methods:{
@@ -40,7 +97,17 @@ export default {
     },
     change : function(){
       this.$emit('update:search', this.keyword)
-    }
+    },
+    show : function(value){
+      if(value == 'upload'){
+        this.formUpload = !this.formUpload
+        this.formNoti = false
+      }
+      else{
+        this.formNoti = !this.formNoti
+        this.formUpload = false
+      }
+    } 
   },
   watch:{
       keyword : function(){
@@ -57,6 +124,14 @@ export default {
 }
 .active{
   color : red;
+}
+
+.formShow{
+  background-color : rgba(255, 255, 255, 0.1);
+}
+
+.show{
+  display: block !important;
 }
 
 i:hover{
@@ -207,9 +282,163 @@ i.ti-bell, i.ti-video-camera{
   border-radius: 50%;
 }
 
+.form{
+  position: fixed;
+  background-color: #212121;
+  right : 8%;
+  width: 200px;
+  z-index: 2;
+  border-radius: 8px;
+  display: none;
+}
+
+.upload{
+  height: 125px;
+}
+.upload div.row{
+  box-sizing: border-box;
+  text-align: left;
+  position: relative;
+  height: 40%;
+  width: 100%;
+  margin : 8px 0;
+  user-select: none;
+}
+
+.upload div.row:hover{
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.upload span{
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  margin-left : 55px;
+  font-weight: 400;
+  font-size: 15px;
+  line-height: 100%;
+}
+
+i.ti-upload,i.ti-eye{
+    position: absolute;
+    left : 8%;
+    top : 59%;
+    transform: translateY(-50%);
+    font-size: 20px;
+}
+
+.noti{
+  top : 8%;
+  right : 5%;
+  height: auto;
+  width: 390px;
+  min-height: 200px;
+  max-height: 500px;
+  overflow: auto;
+  
+}
+
+.noti::-webkit-scrollbar{
+  display: none;
+}
+
+
+.noti::before{
+  position: fixed;
+  box-sizing: border-box;
+  border-radius: 8px 8px 0 0;
+  background-color: #212121;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  padding : 0 16px;
+  width : 390px;
+  font-size: 15px;
+  text-align: left;
+  content: 'Thông báo';
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  display: block;
+  z-index: 3;
+}
+
+.noti .row:first-child{
+  margin-top : 50px
+}
+
+.noti::after{
+  content : '';
+  display: block;
+  height: 50px;
+}
+
+.noti .row{
+  box-sizing: border-box;
+  text-align: left;
+  position: relative;
+  height: 135px;
+  width: 100%;
+  margin : 8px 0;
+  user-select: none;
+}
+
+.noti .row:hover{
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.noti .userNoti{
+  width: 48px;
+  height: 48px;
+}
+
+.noti .userNoti img{
+  position: absolute;
+  width: 48px;
+  left : 5%;
+  top : 10%;
+  height: 48px;
+  border-radius: 50%;
+}
+
+.noti .content{
+  position: absolute;
+  left : 20%;
+  top : 0;
+  height: 100%;
+}
+
+.noti .content p{
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  font-size: 14px;
+}
+
+.noti .content .content-noti{
+  padding-top : 12px;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  line-height: 20px;
+  font-size: 14px;
+  width: 200px;
+}
+
+.noti .content p.content-time{
+  position: absolute;
+  bottom : 0;
+  opacity: 0.6;
+  font-size: 12px;
+}
+
+.noti .video{
+  position: absolute;
+  top : 10%;
+  right : 4%;
+  width: 90px;
+  height: 60px;
+}
+
+.noti .video img{
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
+}
+
 i.ti-menu:hover,
 i.ti-bell:hover,
 i.ti-video-camera:hover{
-  background-color : rgba(255, 255, 255, 0.1)
+  background-color : rgba(255, 255, 255, 0.1);
 }
 </style>
