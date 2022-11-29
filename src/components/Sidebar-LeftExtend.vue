@@ -102,15 +102,26 @@
     
 <script>
     export default{
-        name : 'Sidebar_Left',
+        name : 'Sidebar_LeftExtend',
         data() {
             return {
-                selected : -1
+                selected : 0
             }
+        },
+        props: {
+            idSelect : Number
+        },
+        created : function(){
+            this.selected = this.idSelect
         },
         methods : {
             change : function(number){
                 this.selected = number
+            }
+        },
+        watch : {
+            selected : function(){
+                this.$emit('update:idSelect',this.selected)
             }
         }
             

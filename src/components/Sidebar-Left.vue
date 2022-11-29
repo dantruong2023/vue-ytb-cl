@@ -27,12 +27,22 @@
                 selected : 0
             }
         },
+        props: {
+            idSelect : Number
+        },
+        created : function(){
+            this.selected = this.idSelect
+        },
         methods : {
             change : function(number){
                 this.selected = number
             }
-        }
-            
+        },
+        watch : {
+            selected : function(){
+                this.$emit('update:idSelect',this.selected)
+            }
+        } 
     }
 </script>
 

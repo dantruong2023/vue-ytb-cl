@@ -1,8 +1,8 @@
 <template>
   <div id="app">
     <Header id="header" :search.sync="filter" :is-extend.sync = "isExtend"></Header>
-    <SideBar id="sidebar" v-if="isExtend == false"></SideBar>
-    <SideBarExtend id="sidebarextend" v-if="isExtend == true"></SideBarExtend>
+    <SideBar id="sidebar" :idSelect.sync = "idSelect" v-if="isExtend == false"></SideBar>
+    <SideBarExtend id="sidebarextend" :idSelect.sync = "idSelect" v-if="isExtend == true"></SideBarExtend>
     <ContentVideo id="content" :class="[{contentZoomOut : isExtend == true}]" :data="data" :key="keyChild"></ContentVideo>
   </div>
 </template>
@@ -41,6 +41,7 @@ export default {
   ,
   data(){
     return {
+      idSelect : 0,
       isExtend : false,
       keyChild : '',
       data : [],
