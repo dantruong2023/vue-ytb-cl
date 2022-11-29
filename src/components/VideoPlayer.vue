@@ -1,6 +1,6 @@
 <template>
     <div class="item-video" v-on:click="navigate()">
-        <img v-bind:src="imgshow" v-on:mouseover="hover()" v-on:mouseleave="dishover()" alt="" >
+        <img v-bind:src="imgshow" alt="" >
         <div class="content-video">
             <div class="row" style="margin : 0px;">
                 <div class="avatar col col-2">
