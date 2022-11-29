@@ -1,14 +1,16 @@
 <template>
   <div id="app">
-    <Header id="header" :search.sync="filter"></Header>
-    <SideBar id="sidebar"></SideBar>
-    <ContentVideo id="content" :data="data" :key="keyChild"></ContentVideo>
+    <Header id="header" :search.sync="filter" :is-extend.sync = "isExtend"></Header>
+    <SideBar id="sidebar" v-if="isExtend == false"></SideBar>
+    <SideBarExtend id="sidebarextend" v-if="isExtend == true"></SideBarExtend>
+    <ContentVideo id="content" :class="[{contentZoomOut : isExtend == true}]" :data="data" :key="keyChild"></ContentVideo>
   </div>
 </template>
 
 <script>
 import Header from './components/Header.vue'
 import SideBar from './components/Sidebar-Left.vue'
+import SideBarExtend from './components/Sidebar-LeftExtend.vue'
 import ContentVideo from './components/Content-Main.vue'
 
 
@@ -18,6 +20,7 @@ export default {
     Header,
     SideBar,
     ContentVideo,
+    SideBarExtend
   },
   watch:{
     filter : function(){
@@ -38,6 +41,7 @@ export default {
   ,
   data(){
     return {
+      isExtend : false,
       keyChild : '',
       data : [],
       filter : 'vipvay',
@@ -54,7 +58,7 @@ export default {
                         gif : 'bcdbl.gif'
                     },
                     {
-                        name :"Ông bà già tao lo hết - Bình Gold",
+                        name :"Ông bà già tao lo hết",
                         image  : "obgtlh.jpg",
                         avatar  : "mylove.jpg",
                         view :"1.4M" ,
@@ -65,7 +69,7 @@ export default {
                         gif  : "obgtlh.gif"
                     },
                     {
-                        name :"Tiếng pháo tiễn người - Hùng Quân",
+                        name :"Tiếng pháo tiễn người",
                         image  : "tptn.jpg",
                         avatar  : "hungquan.jpg",
                         view :"186K" ,
@@ -253,13 +257,29 @@ export default {
    /* box-sizing: border-box; */
 }
 
+html {
+    scrollbar-width: none; /* For Firefox */
+    -ms-overflow-style: none; /* For Internet Explorer and Edge */
+}
+
+html::-webkit-scrollbar {
+    width: 0px; /* For Chrome, Safari, and Opera */
+}
+
 #app {
+  overflow: scroll;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
   margin-top: 60px;
+}
+
+#app::-webkit-scrollbar{
+  display : none;
 }
 
 #header{
@@ -280,9 +300,41 @@ export default {
   background-color: #0f0f0f;
 }
 
+@keyframes extendSidebar{
+  from{
+    width: 5%;
+  }
+  to{
+    width: 15%;
+  }
+}
+
+#sidebarextend{
+  position: fixed;
+  overflow-y: hidden;
+  overflow-y: scroll;
+  top : 55px;
+  width: 15%;
+  height: 100%;
+  background-color: #0f0f0f;
+  overflow: auto;
+  -ms-overflow-style: none;
+  animation: extendSidebar ease 0.0s;
+}
+
+#sidebarextend::-webkit-scrollbar{
+  display: none;
+}
+
+.contentZoomOut{
+  margin-left : 15% !important;
+  width: 83% !important;
+}
+
 #content{
   margin-left : 5%;
-  margin-top : 60px;
+  margin-top : 0px;
+  /* margin-top : 60px; */
   width: 93%;
   height: 100%;
   background-color: #0f0f0f;

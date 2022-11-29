@@ -29,6 +29,7 @@
                 :author="data[i-1].author"
                 :check="data[i-1].check"
                 :link="data[i-1].link"
+                :gif="data[i-1].gif"
                 v-if="data[i-1]"
                 ></VideoPlayer>
             </div>
