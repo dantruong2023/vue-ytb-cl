@@ -1,5 +1,10 @@
 <template>
     <div>
+        <div class="categories">
+            <div class="category" v-for="i in tag.length" :key="i" :class="[{categoryActive : index == i-1}]" @click="filterbyTag(i-1,tag[i-1])">
+                {{ tag[i-1] }}
+            </div>
+        </div>
         <template v-if="great4">
         <div class="rows" v-for="idx in Math.ceil(this.length/4)" v-bind:key="idx">
             <div v-for="i in 4" :key="i">
@@ -44,31 +49,74 @@
         data(){
             return {
                 length : 0,
-                index : 0,
-                great4 : false
+                great4 : false,
+                tag : ['All','Music','Bình Gold']
             }
         },
         props:{
             msg : String,
             data : Array,
+            index : Number,
+            filterTag : String
         },
-        computed : {
-            
+        watch : {
+
         },
         methods:{
-            
+            filterbyTag : function(idx,value){
+                this.$emit('update:filterTag',value)
+                this.$emit('update:index',idx)
+            }
         },
         created : function() {
             this.length = this.data.length
             this.great4 = this.length > 4 
-            this.index = 0
         },
         components : {
             VideoPlayer
         }
     }
 </script>
-<style>
+<style scoped>
+
+div.categories{
+    position: fixed;
+    width: 100%;
+    height: 50px;
+    top : 60px;
+    background-color : #0f0f0f;
+    z-index: 1;
+}
+
+.category{
+    float : left;
+    margin-top : 10px;
+    margin-right : 16px;
+    background-color: black;
+    color : #fff;
+    padding : 6px 12px;
+    width : auto;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 400;
+}
+
+.category:hover{
+    background-color : rgba(255, 255, 255, 0.2)
+}
+
+.categoryActive{
+    color : #000 !important;
+    background-color: #f1f1f1 !important;
+}
+
+div.categories::after{
+    content: '';
+    display: block;
+    clear: both;
+}
+
+
 
 .rows {
     margin: 40px 0;

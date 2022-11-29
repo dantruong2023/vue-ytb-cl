@@ -64,7 +64,7 @@
                 window.location.href = this.link
             },
             hover : function(){
-                this.imgshow = this.link_gif
+                this.imgshow = this.link_gif == '' ? this.link_image : this.link_gif
             },
             dishover : function(){
                 this.imgshow = this.link_image

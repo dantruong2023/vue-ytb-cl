@@ -1,9 +1,14 @@
 <template>
   <div id="app">
-    <Header id="header" :search.sync="filter" :is-extend.sync = "isExtend"></Header>
-    <SideBar id="sidebar" :idSelect.sync = "idSelect" v-if="isExtend == false"></SideBar>
-    <SideBarExtend id="sidebarextend" :idSelect.sync = "idSelect" v-if="isExtend == true"></SideBarExtend>
-    <ContentVideo id="content" :class="[{contentZoomOut : isExtend == true}]" :data="data" :key="keyChild"></ContentVideo>
+  <Header id="header" :search.sync="filter" :is-extend.sync = "isExtend"></Header>
+  <SideBar id="sidebar" :idSelect.sync = "idSelect" v-if="isExtend == false"></SideBar>
+  <SideBarExtend id="sidebarextend" :idSelect.sync = "idSelect" v-if="isExtend == true"></SideBarExtend>
+  <ContentVideo id="content" :class="[{contentZoomOut : isExtend == true}]" 
+    :data="data" 
+    :filterTag.sync="filterTag" 
+    :key="keyChild"
+    :index.sync="indexTag">
+  </ContentVideo>
   </div>
 </template>
 
@@ -33,6 +38,17 @@ export default {
           self.data.push(item)
       }
       self.keyChild = Math.ceil(Math.random() * 1000)%123 + ''
+    },
+    filterTag : function(){
+      var self = this
+      this.filter = ''
+      self.data = []
+      for(var item of self.dataVideo)
+      {
+        if(item !== undefined && item.tag.includes(self.filterTag))
+          self.data.push(item)
+      }
+      self.keyChild = Math.ceil(Math.random() * 1000)%123 + ''
     }
   },
   created: function() {
@@ -41,33 +57,38 @@ export default {
   ,
   data(){
     return {
+      indexTag : 0,
       idSelect : 0,
       isExtend : false,
       keyChild : '',
       data : [],
-      filter : 'vipvay',
+      filter : 'start',
+      filterTag : 'all',
       dataVideo : [
                     {
                         name :"Bật chế độ bay lên - Bình Gold",
                         image  : "bcdbl.jpg",
-                        avatar  : "avatar.jpg",
+                        avatar  : "binhgold.jfif",
                         view :"985K" ,
                         time :"2 months",
-                        author : "Đan Trường",
+                        author : "Bình Gold",
                         check : true,
                         link : "https://youtu.be/r842vn9Os0Y",
-                        gif : 'bcdbl.gif'
+                        gif : 'bcdbl.gif',
+                        tag : ['All','Music','Đan Trường','Bình Gold']
+                        
                     },
                     {
                         name :"Ông bà già tao lo hết",
                         image  : "obgtlh.jpg",
-                        avatar  : "mylove.jpg",
+                        avatar  : "binhgold.jfif",
                         view :"1.4M" ,
                         time :"8 months",
-                        author : "Thu Trang",
+                        author : "Bình Gold",
                         check : true,
                         link : "https://youtu.be/siEhdhxiqHg",
-                        gif  : "obgtlh.gif"
+                        gif  : "obgtlh.gif",
+                        tag : ['All','Music','Đan Trường','Bình Gold']
                     },
                     {
                         name :"Tiếng pháo tiễn người",
@@ -78,7 +99,8 @@ export default {
                         author : "Hùng Quân",
                         check : true,
                         link : "https://youtu.be/KI6TFG0-mTY",
-                        gif : "tptn.gif"
+                        gif : "tptn.gif",
+                        tag : ['All','Music','Đan Trường']
                     },
                     {
                         name :"Love potion number 9",
@@ -89,7 +111,8 @@ export default {
                         author : "Dolce Music",
                         check : false,
                         link : "https://youtu.be/-RqwGKFJbsE",
-                        gif : "lpn9.gif"
+                        gif : "lpn9.gif",
+                        tag : ['All','Music','Đan Trường']
                     },
                     {
                         name :"Bốc bát họ | Bình Gold",
@@ -100,7 +123,8 @@ export default {
                         author : "Bình Gold",
                         check : true,
                         link : "https://youtu.be/gQ9U94eH7xQ",
-                        gif : 'bbh.gif'
+                        gif : 'bbh.gif',
+                        tag : ['All','Music','Đan Trường','Bình Gold']
                     },
                     {
                         name :"Hết nhạc con về",
@@ -111,7 +135,8 @@ export default {
                         author : "1967 Music",
                         check : false,
                         link : "https://youtu.be/CKgEdz3paa0",
-                        gif : "hncv.gif"
+                        gif : "hncv.gif",
+                        tag : ['All','Music','Đan Trường']
                     },
                     {
                         name :"Chạnh lòng thương cô",
@@ -122,7 +147,8 @@ export default {
                         author : "HOA HỒNG DẠI MUSIC",
                         check : false,
                         link : "https://youtu.be/xIyIP-fR7Xg",
-                        gif : "cltc.gif"
+                        gif : "cltc.gif",
+                        tag : ['All','Music','Đan Trường']
                     },
                     {
                         name :"Sang Xịn Mịn REMIX - Gill ft. Kewtiie x CUKAK",
@@ -133,7 +159,8 @@ export default {
                         author : "Djay Boy",
                         check : false,
                         link : "https://youtu.be/g4HygG78cT0",
-                        gif : "sxm.gif"
+                        gif : "sxm.gif",
+                        tag : ['All','Music','Đan Trường']
                     },
                     {
                         name :"Goodie - Tbynz",
@@ -144,7 +171,8 @@ export default {
                         author : "Dinz Music",
                         check : false,
                         link : "https://youtu.be/o-e68Xjs2As",
-                        gif : "goodies.gif"
+                        gif : "goodies.gif",
+                        tag : ['All','Music','Đan Trường']
                     },
                     {
                         name :"Lạc Trôi Remix - Sơn Tùng M-TP",
@@ -155,7 +183,8 @@ export default {
                         author : "Sơn Tùng MTP",
                         check : true,
                         link : "https://youtu.be/Llw9Q6akRo4",
-                        gif : "lt.gif"
+                        gif : "lt.gif",
+                        tag : ['All','Music','Đan Trường']
                     },
                     {
                         name :"Lạc Chốn Hồng Trần Remix Lã Phong Lâm x Đại Mèo",
@@ -166,7 +195,8 @@ export default {
                         author : "BiliBili",
                         check : false,
                         link : "https://youtu.be/LJo0d9sASFI",
-                        gif : "lcht.gif"
+                        gif : "lcht.gif",
+                        tag : ['All','Music','Đan Trường']
                     },
                     {
                         name :"ANH CHỈ CÓ 102 (02) | VINARAP - JP LONG x KUZZ",
@@ -177,7 +207,8 @@ export default {
                         author : "Ansez",
                         check : false,
                         link : "https://youtu.be/L5nVIDA5zFY",
-                        gif : "acc102.gif"
+                        gif : "acc102.gif",
+                        tag : ['All','Music','Đan Trường']
                     },
                     {
                         name :"Em iu - Andree Right Hand ft. Wxrdie x Bình Gold x 2pillz",
@@ -188,7 +219,8 @@ export default {
                         author : "Andree Right Hand",
                         check : true,
                         link : "https://youtu.be/p7YGAKeDPkM",
-                        gif : "ei.gif"
+                        gif : "ei.gif",
+                        tag : ['All','Music','Đan Trường']
                     },
                     {
                         name :"Ơ Động Đất À? Không Phải Đấy Là Bọn Anh Đang Đi Lên - VÂN RUNG",
@@ -199,7 +231,8 @@ export default {
                         author : "Orinn Music",
                         check : false,
                         link : "https://youtu.be/5kT9DlHYiOE",
-                        gif : "odda.gif"
+                        gif : "odda.gif",
+                        tag : ['All','Music','Đan Trường']
                     },
                     {
                         name :"16 Typh - Người Chơi Hệ Đẹp「Cukak Remix」",
@@ -210,7 +243,8 @@ export default {
                         author : "1967 Music",
                         check : false,
                         link : "https://youtu.be/1VnsC7SgkBI",
-                        gif : "nchd.gif"
+                        gif : "nchd.gif",
+                        tag : ['All','Music','Đan Trường']
                     },
                     {
                         name :"Đoạn Tuyệt Nàng Đi Ver2 Remix",
@@ -221,7 +255,8 @@ export default {
                         author : "Frexs Record",
                         check : false,
                         link : "https://youtu.be/1Y5AxyERJsA",
-                        gif : "dtnd.gif"
+                        gif : "dtnd.gif",
+                        tag : ['All','Music','Đan Trường']
                     },
                     {
                         name :"Ông Cháu Ơi Về Đội Của Chú | WanGanh Remix",
@@ -232,7 +267,8 @@ export default {
                         author : "Nhạc sàn remix",
                         check : false,
                         link : "https://youtu.be/erRTlNs8OkM",
-                        gif : "ocovdcc.gif"
+                        gif : "ocovdcc.gif",
+                        tag : ['All','Music','Đan Trường']
                     },
                     {
                         name :"Phong dạ hành Remix",
@@ -243,7 +279,8 @@ export default {
                         author : "DJ AM Official",
                         check : false,
                         link : "https://youtu.be/bXZgaAc2BB8",
-                        gif : "pdh.gif"
+                        gif : "pdh.gif",
+                        tag : ['All','Music','Đan Trường']
                     }
                 ],
     }
@@ -287,7 +324,6 @@ html::-webkit-scrollbar {
   width: 100vw;
   height : 60px;
   background-color : #0f0f0f;
-  /* border : 1px solid #000; */
   z-index: 1;
   position : fixed;
   top : 0;
