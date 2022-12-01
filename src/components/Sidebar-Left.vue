@@ -36,6 +36,7 @@
         methods : {
             change : function(number){
                 this.selected = number
+                if(this.selected > 3) this.selected = 0
             }
         },
         watch : {
@@ -70,6 +71,7 @@ i, p{
 .sub, .library{
     padding : 16px 0; 
     width: 100%;
+    user-select: none;
 }
 
 .home i,.short i,.sub i, .library i{

@@ -1,14 +1,24 @@
 <template>
   <div id="app">
-  <Header id="header" :search.sync="filter" :is-extend.sync = "isExtend"></Header>
-  <SideBar id="sidebar" :idSelect.sync = "idSelect" v-if="isExtend == false"></SideBar>
-  <SideBarExtend id="sidebarextend" :idSelect.sync = "idSelect" v-if="isExtend == true"></SideBarExtend>
+  <Header id="header" 
+  :search.sync="filter" 
+  :is-extend.sync = "isExtend"
+  :notification="notification"
+  :idSelect.sync="idSelect">
+  </Header>
+
+  <SideBar id="sidebar" :idSelect.sync = "idSelect" v-if="isExtend == false" :key="keySidebar"></SideBar>
+  <SideBarExtend id="sidebarextend" :idSelect.sync = "idSelect" v-if="isExtend == true" :key="keySidebar"></SideBarExtend>
+
   <ContentVideo id="content" :class="[{contentZoomOut : isExtend == true}]" 
     :data="data" 
     :filterTag.sync="filterTag" 
     :key="keyChild"
     :index.sync="indexTag"
-    :tag="tag">
+    :tag="tag"
+    :idSelect="idSelect"
+    :shorts="short"
+    :author="channel">
   </ContentVideo>
   </div>
 </template>
@@ -35,6 +45,7 @@ export default {
       self.data = []
       if(search == ''){
           this.indexTag = 0
+          this.idSelect = 0
           self.keyChild = Math.ceil(Math.random() * 1000)%123 + ''
       }
       for(var item of self.dataVideo)
@@ -42,8 +53,10 @@ export default {
         if(item !== undefined && (item.name.toLowerCase().startsWith(search.toLowerCase(),0)==true || item.tag.includes(search) == true))
           self.data.push(item)
       }
-      self.keyChild = Math.ceil(Math.random() * 1000)%123 + ''
+      this.keyChild = Math.ceil(Math.random() * 1000)%123 + ''
       this.indexTag = 0
+      this.idSelect = 0
+      this.keySidebar = Math.ceil(Math.random() * 1000)%123 + ''
     },
     filterTag : function(){
       var self = this
@@ -55,6 +68,51 @@ export default {
           self.data.push(item)
       }
       self.keyChild = Math.ceil(Math.random() * 1000)%123 + ''
+    },
+    isExtend : function(){
+
+    },
+    idSelect : function(){
+      var self = this
+      if(this.idSelect >= 8 && this.idSelect <= 10){
+        var name = ''
+        switch(this.idSelect){
+          case 8 : {
+            name = 'Bình Gold'
+            break
+          }
+          case 9 : {
+            name = 'Ansez'
+            break
+          }
+          case 10 : {
+            name = 'Andree Right Hand'
+            break
+          }
+        }
+        this.authors.forEach(function(channel){
+          if(name == channel.author){
+            self.channel = channel
+            return
+          }
+        })
+      }
+      self.keyChild = Math.ceil(Math.random() * 1000)%123 + ''
+    }
+  },
+  methods:{
+    convertToUser : function(str){
+        str = str.toLowerCase();
+        str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g, "a");
+        str = str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g, "e");
+        str = str.replace(/ì|í|ị|ỉ|ĩ/g, "i");
+        str = str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g, "o");
+        str = str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g, "u");
+        str = str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g, "y");
+        str = str.replace(/đ/g, "d");
+        str = str.replace(/\u0300|\u0301|\u0303|\u0309|\u0323/g, ""); // Huyền sắc hỏi ngã nặng 
+        str = str.replace(/\u02C6|\u0306|\u031B/g, ""); // Â, Ê, Ă, Ơ, Ư
+        return str.replaceAll(' ','');
     }
   },
   created: function() {
@@ -63,6 +121,30 @@ export default {
     this.dataVideo.forEach(function(item){
         item.tag.push(item.author)
         if(self.tag.includes(item.author) == false) self.tag.push(item.author)
+
+        //Push all authors author : function(avatar,author,verified,username,sub,videos)
+        var isExist = false 
+        self.authors.forEach(function(author){
+            if(author.author == item.author) isExist = true
+        })
+        if(isExist==false){
+          var videos = []
+          var channel = new self.author(
+                item.avatar,
+                item.author,
+                item.check,
+                self.convertToUser(item.author) + Math.floor(Math.random()*1000),
+                Math.ceil(Math.random()*998) + 'K',
+                videos,
+                item.banner
+          )
+          for(var video of self.dataVideo){
+            if(video.author == channel.author){
+              channel.videos.push(video)
+            }
+          }
+          self.authors.push(channel)
+        }
     })
   }
   ,
@@ -73,9 +155,55 @@ export default {
       idSelect : 0,
       isExtend : false,
       keyChild : '',
+      keySidebar : 'key',
       data : [],
       filter : 'start',
       filterTag : 'all',
+      author : function(avatar,author,verified,username,sub,videos,banner){
+                this.avatar = avatar
+                this.author = author
+                this.check = verified
+                this.username = username
+                this.subscribers = sub
+                this.videos = videos
+                this.banner = banner
+            },
+      authors : [
+
+      ],
+      channel : '',
+      notification : [
+        {
+          avatar : 'avatar.jpg',
+          content : 'Technology used : Html - CSS - VueJS - icons global',
+          time : '0 giây trước',
+          img : ''
+        },
+        {
+          avatar : 'hungquan.jpg',
+          content : 'Hùng Quân đã tải lên: Tiếng pháo tiễn người',
+          time : '13 ngày trước',
+          img : 'tptn.jpg'
+        },
+        {
+          avatar : 'binhgold.jfif',
+          content : 'Bình Gold đã tải lên: Bật chế độ bay lên - Bình Gold',
+          time : '2 tháng trước',
+          img : 'bcdbl.jpg'
+        },
+        {
+          avatar : 'binhgold.jfif',
+          content : 'Bình Gold đã tải lên: Ông bà già tao lo hết - Bình Gold',
+          time : '8 tháng trước',
+          img : 'obgtlh.jpg'
+        },
+        {
+          avatar : 'andree.jpg',
+          content : 'Andree Right Hand đã tải lên: Em iu - Andree Right Hand ft. Wxrdie x Bình Gold x 2pillz',
+          time : '11 tháng trước',
+          img : 'ei.jpg'
+        }
+      ],
       dataVideo : [
                     {
                         name :"Bật chế độ bay lên - Bình Gold",
@@ -84,23 +212,27 @@ export default {
                         view :"985K" ,
                         time :"2 months",
                         author : "Bình Gold",
+                        banner : 'binhgold.png',
                         check : true,
                         link : "https://youtu.be/r842vn9Os0Y",
                         gif : 'bcdbl.gif',
-                        tag : ['All','Music','Đan Trường','Bình Gold']
+                        tag : ['All','Music','Đan Trường','Bình Gold'],
+                        description : 'BCDBL - Bình Gold | Bật Chế Độ Bay Lên | Nhạc Cực Căng'
                         
                     },
                     {
-                        name :"Ông bà già tao lo hết",
+                        name :"Ông bà già tao lo hết - Bình Gold",
                         image  : "obgtlh.jpg",
                         avatar  : "binhgold.jfif",
                         view :"1.4M" ,
                         time :"8 months",
                         author : "Bình Gold",
+                        banner : 'binhgold.png',
                         check : true,
                         link : "https://youtu.be/siEhdhxiqHg",
                         gif  : "obgtlh.gif",
-                        tag : ['All','Music','Đan Trường','Bình Gold']
+                        tag : ['All','Music','Đan Trường','Bình Gold'],
+                        description : 'Costume:  Venesto, SexyM, Bigent, Shadowiii3, Apex Solitaire Jewerly, the Suits house, Aobvns, DANG and madebyLYSKELI'
                     },
                     {
                         name :"Tiếng pháo tiễn người",
@@ -113,6 +245,20 @@ export default {
                         link : "https://youtu.be/KI6TFG0-mTY",
                         gif : "tptn.gif",
                         tag : ['All','Music','Đan Trường']
+                    },
+                    {
+                        name :"ANH CHỈ CÓ 102 (02) | VINARAP - JP LONG x KUZZ",
+                        image  : "acc102.jpg",
+                        avatar  : "ansez.png",
+                        view :"400K" ,
+                        time :"5 months",
+                        author : "Ansez",
+                        banner : 'ansez.png',
+                        check : false,
+                        link : "https://youtu.be/L5nVIDA5zFY",
+                        gif : "acc102.gif",
+                        tag : ['All','Music','Đan Trường'],
+                        description : 'ANH CHỈ CÓ 102 (02) | VINARAP (PINO REMIX) - JP LONG x KUZZ | ANSEZ RELEASE #ansez #vinarap #vinrapansez'
                     },
                     {
                         name :"Love potion number 9",
@@ -133,10 +279,12 @@ export default {
                         view :"874K" ,
                         time :"3 months",
                         author : "Bình Gold",
+                        banner : 'binhgold.png',
                         check : true,
                         link : "https://youtu.be/gQ9U94eH7xQ",
                         gif : 'bbh.gif',
-                        tag : ['All','Music','Đan Trường','Bình Gold']
+                        tag : ['All','Music','Đan Trường','Bình Gold'],
+                        description : '✈ BỐC BÁT HỌ I BÌNH GOLD I NAM DUCK REMIX I PMT .'
                     },
                     {
                         name :"Hết nhạc con về",
@@ -211,28 +359,18 @@ export default {
                         tag : ['All','Music','Đan Trường']
                     },
                     {
-                        name :"ANH CHỈ CÓ 102 (02) | VINARAP - JP LONG x KUZZ",
-                        image  : "acc102.jpg",
-                        avatar  : "ansez.png",
-                        view :"400K" ,
-                        time :"5 months",
-                        author : "Ansez",
-                        check : false,
-                        link : "https://youtu.be/L5nVIDA5zFY",
-                        gif : "acc102.gif",
-                        tag : ['All','Music','Đan Trường']
-                    },
-                    {
                         name :"Em iu - Andree Right Hand ft. Wxrdie x Bình Gold x 2pillz",
                         image  : "ei.jpg",
                         avatar  : "andree.jpg",
                         view :"998K" ,
                         time :"11 months",
                         author : "Andree Right Hand",
+                        banner : 'andree.png',
                         check : true,
                         link : "https://youtu.be/p7YGAKeDPkM",
                         gif : "ei.gif",
-                        tag : ['All','Music','Đan Trường']
+                        tag : ['All','Music','Đan Trường'],
+                        description : 'Sponsored by $maker & Jagermeister Producer: 2pillz Director: Tungage & Minh Bi'
                     },
                     {
                         name :"Ơ Động Đất À? Không Phải Đấy Là Bọn Anh Đang Đi Lên - VÂN RUNG",
@@ -295,6 +433,29 @@ export default {
                         tag : ['All','Music','Đan Trường']
                     }
                 ],
+      short:[
+        {
+          avatar : 'dinz.jpg',
+          author : 'Dinz',
+          source : 'spiderman.mp4',
+          like : '421K',
+          comment : '25.9K'
+        },
+        {
+          avatar : 'avatar.jpg',
+          author : 'Đan Trường',
+          source : 'cake.mp4',
+          like : '89.3K',
+          comment : '6.1K'
+        },
+        {
+          avatar : 'mylove.jpg',
+          author : 'Thu Trang',
+          source : 'anvat.mp4',
+          like : '189.7K',
+          comment : '13.4K'
+        }
+      ]
     }
   }
 }
@@ -304,16 +465,15 @@ export default {
 *{
    margin : 0;
    padding : 0;
-   /* box-sizing: border-box; */
 }
 
 html {
-    scrollbar-width: none; /* For Firefox */
-    -ms-overflow-style: none; /* For Internet Explorer and Edge */
+    scrollbar-width: none; 
+    -ms-overflow-style: none; 
 }
 
 html::-webkit-scrollbar {
-    width: 0px; /* For Chrome, Safari, and Opera */
+    width: 0px; 
 }
 
 #app {
@@ -381,7 +541,7 @@ html::-webkit-scrollbar {
 }
 
 #content{
-  position: relative;
+  position: fixed;
   z-index: 0;
   margin-left : 5%;
   margin-top : 0px;
@@ -391,6 +551,13 @@ html::-webkit-scrollbar {
   background-color: #0f0f0f;
   padding : 32px 48px;
   min-height: 100vh;
+  overflow-y: auto;
+}
+
+#content::after{
+  content: '';
+  display : block;
+  margin-bottom: 200px;
 }
 
 </style>

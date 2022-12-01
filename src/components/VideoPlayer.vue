@@ -1,6 +1,6 @@
 <template>
-    <div class="item-video" v-on:click="navigate()">
-        <img v-bind:src="imgshow" alt="" >
+    <div class="item-video" v-on:click="navigate()" :title="name">
+        <img v-bind:src="link_image" alt="" >
         <div class="content-video">
             <div class="row" style="margin : 0px;">
                 <div class="avatar col col-2">
@@ -124,7 +124,7 @@ p{
   cursor: pointer;
   float : left;
   margin : 0 8px 0 8px;
-  width: calc(25% - 36px);
+  width: calc(26% - 36px);
   height : 300px;
   /* background-color: white; */
 }

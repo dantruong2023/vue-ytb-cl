@@ -16,51 +16,27 @@
       <div class="img">
         <img src="/assets/img/avatar/avatar.jpg" alt="" width="32px" height="32px">
       </div>
+      <!-- Notifications -->
       <i title="Notifications" class="ti-bell" :class="[{active : formNoti},{formShow : formNoti == true}]" @click="show('noti')">
         <div class="form noti" :class="[{show : formNoti==true}]">
-          <div class="row">
+          <div class="row" v-for="item of notification" :key="item.content">
             <div class="userNoti">
-              <img  src="/assets/img/avatar/binhgold.jfif" alt="">
+              <img :src="link_image(item.avatar)" alt="">
             </div>
             <div class="content">
               <!-- Max 98 length ...  -->
-              <div class="content-noti">Bình Gold đã tải lên: Bật chế độ bay lên - Bình Gold</div>
-              <p class="content-time">2 tháng trước</p>
+              <div class="content-noti" :class="[{strong : item.content.includes('global')}]">
+                  {{ compact_content(item.content) }}
+              </div>
+              <p class="content-time">{{ item.time }}</p>
             </div>
             <div class="video">
-              <img src="/assets/img/video/bcdbl.jpg" alt="">
-            </div> 
-          </div>
-
-          <div class="row">
-            <div class="userNoti">
-              <img  src="/assets/img/avatar/ansez.png" alt="">
-            </div>
-            <div class="content">
-              <!-- Max 98 length ...  -->
-              <div class="content-noti">Ansez đã tải lên: ANH CHỈ CÓ 102 (02) | VINARAP - JP LONG x KUZZ</div>
-              <p class="content-time">5 tháng trước</p>
-            </div>
-            <div class="video">
-              <img src="/assets/img/video/acc102.jpg" alt="">
-            </div> 
-          </div>
-
-          <div class="row">
-            <div class="userNoti">
-              <img  src="/assets/img/avatar/dolce.jpg" alt="">
-            </div>
-            <div class="content">
-              <!-- Max 98 length ...  -->
-              <div class="content-noti">Dolce Music đã tải lên: Love potion number 9</div>
-              <p class="content-time">11 tháng trước</p>
-            </div>
-            <div class="video">
-              <img src="/assets/img/video/lpn9.jpg" alt="">
+              <img :src="link_video(item.img)" alt="" v-if="item.img!=''">
             </div> 
           </div>
         </div>
       </i>
+      <!-- Upload video -->
       <i title="Create" class="ti-video-camera" :class="[{active : formUpload},{formShow : formUpload == true}]" @click="show('upload')">
         <div class="form upload" :class="[{show : formUpload==true}]">
           <div class="row">
@@ -82,13 +58,16 @@ export default {
   name: 'HelloWorld',
   props: {
     search : String,
-    isExtend : Boolean
+    isExtend : Boolean,
+    notification : Array,
+    idSelect : Number
   },
   data(){
     return {
         keyword : '',
         formNoti : false,
-        formUpload : false
+        formUpload : false,
+        select : 0
     }
   },
   methods:{
@@ -107,7 +86,19 @@ export default {
         this.formNoti = !this.formNoti
         this.formUpload = false
       }
-    } 
+    },
+    link_image : function(value){
+        return '/assets/img/avatar/' +value
+    },
+    link_video : function(value){
+      return '/assets/img/video/' +value
+    },
+    compact_content : function(value){
+      if(value.length > 98){
+        return value.substring(0,95).replace('global','') + '...'
+      }
+      return value.replace('global','')
+    }
   },
   watch:{
       keyword : function(){
@@ -124,6 +115,11 @@ export default {
 }
 .active{
   color : red;
+}
+
+.strong{
+  font-weight: 700;
+  color: green;
 }
 
 .formShow{

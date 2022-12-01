@@ -1,64 +1,137 @@
 <template>
     <div>
-        <div class="categories">
-            <div class="category" v-for="i in tag.length > 10 ? 10 : tag.length" :key="i" :class="[{categoryActive : index == i-1}]" @click="filterbyTag(i-1,tag[i-1])">
-                {{ tag[i-1] }}
+        <div class="page-home" v-if="(idSelect == 0)">
+            <div class="categories">
+                <div class="category" v-for="i in tag.length > 7 ? 7 : tag.length" :key="i" :class="[{categoryActive : index == i-1}]" @click="filterbyTag(i-1,tag[i-1])">
+                    {{ tag[i-1] }}
+                </div>
+            </div>
+            <template v-if="great4">
+            <div class="rows" v-for="idx in Math.ceil(this.length/4)" v-bind:key="idx">
+                <div v-for="i in 4" :key="i">
+                    <VideoPlayer           
+                    :name = "data[i-1+(idx-1)*4].name"
+                    :image = "data[i-1+(idx-1)*4].image"
+                    :avatar = "data[i-1+(idx-1)*4].avatar"
+                    :view="data[i-1+(idx-1)*4].view" 
+                    :time="data[i-1+(idx-1)*4].time"
+                    :author="data[i-1+(idx-1)*4].author"
+                    :check="data[i-1+(idx-1)*4].check"
+                    :link="data[i-1+(idx-1)*4].link"
+                    :gif="data[i-1+(idx-1)*4].gif"
+                    v-if="data[i-1+(idx-1)*4]"
+                    ></VideoPlayer>
+                </div>
+            </div>
+            </template>
+            <div class="rows" v-if="great4===false">
+                <div v-for="i in 4" :key="i">
+                    <VideoPlayer           
+                    :name = "data[i-1].name"
+                    :image = "data[i-1].image"
+                    :avatar = "data[i-1].avatar"
+                    :view="data[i-1].view" 
+                    :time="data[i-1].time"
+                    :author="data[i-1].author"
+                    :check="data[i-1].check"
+                    :link="data[i-1].link"
+                    :gif="data[i-1].gif"
+                    v-if="data[i-1]"
+                    ></VideoPlayer>
+                </div>
             </div>
         </div>
-        <template v-if="great4">
-        <div class="rows" v-for="idx in Math.ceil(this.length/4)" v-bind:key="idx">
-            <div v-for="i in 4" :key="i">
-                <VideoPlayer           
-                :name = "data[i-1+(idx-1)*4].name"
-                :image = "data[i-1+(idx-1)*4].image"
-                :avatar = "data[i-1+(idx-1)*4].avatar"
-                :view="data[i-1+(idx-1)*4].view" 
-                :time="data[i-1+(idx-1)*4].time"
-                :author="data[i-1+(idx-1)*4].author"
-                :check="data[i-1+(idx-1)*4].check"
-                :link="data[i-1+(idx-1)*4].link"
-                :gif="data[i-1+(idx-1)*4].gif"
-                v-if="data[i-1+(idx-1)*4]"
-                ></VideoPlayer>
+
+        <div class="page-short" v-if="(idSelect == 1)">
+            <template >
+                <VideoShort 
+                v-for="item in shorts"
+                :source="item.source"
+                :like="item.like"
+                :comment="item.comment"
+                :author="item.author"
+                :avatar="item.avatar"
+                :key="item.source"
+                ></VideoShort>
+            </template>
+        </div>
+
+        <div class="library" v-if="(idSelect == 2)">
+            <p class="title-library">This year</p>
+            <template v-if="(length > 5)">
+            <div class="rows" v-for="idx in Math.ceil(this.length/4)" v-bind:key="idx">
+                <div v-for="i in 5" :key="i">
+                    <VideoSubscript        
+                    :name = "data[i-1+(idx-1)*4].name"
+                    :image = "data[i-1+(idx-1)*4].image"
+                    :view="data[i-1+(idx-1)*4].view" 
+                    :time="data[i-1+(idx-1)*4].time"
+                    :author="data[i-1+(idx-1)*4].author"
+                    :check="data[i-1+(idx-1)*4].check"
+                    :link="data[i-1+(idx-1)*4].link"
+                    :gif="data[i-1+(idx-1)*4].gif"
+                    v-if="data[i-1+(idx-1)*4]"
+                    ></VideoSubscript>
+                </div>
+            </div>
+            </template>
+            <div class="rows" v-else>
+                <div v-for="i in 5" :key="i">
+                    <VideoSubscript          
+                    :name = "data[i-1].name"
+                    :image = "data[i-1].image"
+                    :view="data[i-1].view" 
+                    :time="data[i-1].time"
+                    :author="data[i-1].author"
+                    :check="data[i-1].check"
+                    :link="data[i-1].link"
+                    :gif="data[i-1].gif"
+                    v-if="data[i-1]"
+                    ></VideoSubscript>
+                </div>
             </div>
         </div>
-        </template>
-        <div class="rows" v-if="great4===false">
-            <div v-for="i in 4" :key="i">
-                <VideoPlayer           
-                :name = "data[i-1].name"
-                :image = "data[i-1].image"
-                :avatar = "data[i-1].avatar"
-                :view="data[i-1].view" 
-                :time="data[i-1].time"
-                :author="data[i-1].author"
-                :check="data[i-1].check"
-                :link="data[i-1].link"
-                :gif="data[i-1].gif"
-                v-if="data[i-1]"
-                ></VideoPlayer>
-            </div>
+
+        <div class="channel" v-if="(idSelect>=8 && idSelect <= 10)">
+            <ChannelYoutube :channel="author"></ChannelYoutube>
+        </div>
+        <div class="page-else" v-else>
         </div>
     </div> 
 </template>
 <script>
     import VideoPlayer from './VideoPlayer.vue'
-    //Length title max = 58 + 3(...) . substring(0,58)
+    import VideoShort from './VideoShort.vue'
+    import VideoSubscript from './VideoSubscriptions.vue'
+    import ChannelYoutube from './ChannelYoutube.vue'
+
     export default{
         name : 'ContentMain',
         data(){
             return {
+                indexShort : 0,
                 length : 0,
                 great4 : false,
-                // tag : ['All','Music','Bình Gold']
+                io : IntersectionObserver
             }
         },
         props:{
+            author : {
+                avatar : String,
+                author : String,
+                check : Boolean,
+                username : String,
+                subscribers : String,
+                videos : Array,
+                banner : String
+            },
             msg : String,
             data : Array,
             index : Number,
             filterTag : String,
-            tag : Array
+            tag : Array,
+            idSelect : Number,
+            shorts : Array
         },
         watch : {
 
@@ -67,25 +140,24 @@
             filterbyTag : function(idx,value){
                 this.$emit('update:filterTag',value)
                 this.$emit('update:index',idx)
-            }
+            },
         },
         created : function() {
-            var self = this
             this.length = this.data.length
-            this.great4 = this.length > 4 
-            this.data.forEach(function(item){
-                if(self.tag.length >= 10) {
-                    return
-                }
-                if(self.tag.includes(item.author) == false) self.tag.push(item.author)
-            })
+            this.great4 = this.length > 4
+            console.log("Author : ",this.author) 
         },
         components : {
-            VideoPlayer
+            VideoPlayer,
+            VideoShort,
+            VideoSubscript,
+            ChannelYoutube
         }
     }
 </script>
 <style scoped>
+
+/* Home area */
 
 div.categories{
     position: fixed;
@@ -136,5 +208,16 @@ div.categories::after{
     clear: both;
 }
 
+/* Short area */
 
+
+
+/* Library */
+p.title-library{
+    text-align: left;
+    margin-left : 16px;
+    font-size: 16px;
+    color : #fff;
+    font-weight: bold;
+}
 </style>
