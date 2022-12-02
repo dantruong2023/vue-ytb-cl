@@ -1,109 +1,127 @@
 <template>
     <div>
-        <div class="page-home" v-if="(idSelect == 0)">
-            <div class="categories">
-                <div class="category" v-for="i in tag.length > 7 ? 7 : tag.length" :key="i" :class="[{categoryActive : index == i-1}]" @click="filterbyTag(i-1,tag[i-1])">
-                    {{ tag[i-1] }}
+        <template v-if="(showSidebar == false)">
+            <div class="video-player">
+                <VideoPlayer
+                :iframe="videoPlayer.iframe"
+                :title="videoPlayer.title"
+                :description="videoPlayer.description"
+                :view="videoPlayer.view"
+                :time="videoPlayer.time"
+                :channel="videoPlayer.channel"
+                :dataVideo="list_video"
+                :playing.sync="playingChild"
+                ></VideoPlayer>
+            </div>
+        </template>
+        <template v-else>
+            <div class="page-home" v-if="(idSelect == 0)">
+                <div class="categories">
+                    <div class="category" v-for="i in tag.length > 7 ? 7 : tag.length" :key="i" :class="[{categoryActive : index == i-1}]" @click="filterbyTag(i-1,tag[i-1])">
+                        {{ tag[i-1] }}
+                    </div>
+                </div>
+                <template v-if="great4">
+                <div class="rows" v-for="idx in Math.ceil(this.length/4)" v-bind:key="idx">
+                    <div v-for="i in 4" :key="i" @click="playVideo(data[i-1+(idx-1)*4].author,data[i-1+(idx-1)*4].name)">
+                        <VideoComponent   
+                        :name = "data[i-1+(idx-1)*4].name"
+                        :image = "data[i-1+(idx-1)*4].image"
+                        :avatar = "data[i-1+(idx-1)*4].avatar"
+                        :view="data[i-1+(idx-1)*4].view" 
+                        :time="data[i-1+(idx-1)*4].time"
+                        :author="data[i-1+(idx-1)*4].author"
+                        :check="data[i-1+(idx-1)*4].check"
+                        :link="data[i-1+(idx-1)*4].link"
+                        :iframe="data[i-1+(idx-1)*4].iframe"
+                        :gif="data[i-1+(idx-1)*4].gif"
+                        v-if="data[i-1+(idx-1)*4]"
+                        ></VideoComponent>
+                    </div>
+                </div>
+                </template>
+                <div class="rows" v-if="great4===false">
+                    <div v-for="i in 4" :key="i" @click="playVideo(data[i-1+(idx-1)*4].author,data[i-1+(idx-1)*4].name)">
+                        <VideoComponent           
+                        :name = "data[i-1].name"
+                        :image = "data[i-1].image"
+                        :avatar = "data[i-1].avatar"
+                        :view="data[i-1].view" 
+                        :time="data[i-1].time"
+                        :author="data[i-1].author"
+                        :check="data[i-1].check"
+                        :link="data[i-1].link"
+                        :gif="data[i-1].gif"
+                        v-if="data[i-1]"
+                        ></VideoComponent>
+                    </div>
                 </div>
             </div>
-            <template v-if="great4">
-            <div class="rows" v-for="idx in Math.ceil(this.length/4)" v-bind:key="idx">
-                <div v-for="i in 4" :key="i">
-                    <VideoPlayer           
-                    :name = "data[i-1+(idx-1)*4].name"
-                    :image = "data[i-1+(idx-1)*4].image"
-                    :avatar = "data[i-1+(idx-1)*4].avatar"
-                    :view="data[i-1+(idx-1)*4].view" 
-                    :time="data[i-1+(idx-1)*4].time"
-                    :author="data[i-1+(idx-1)*4].author"
-                    :check="data[i-1+(idx-1)*4].check"
-                    :link="data[i-1+(idx-1)*4].link"
-                    :gif="data[i-1+(idx-1)*4].gif"
-                    v-if="data[i-1+(idx-1)*4]"
-                    ></VideoPlayer>
-                </div>
-            </div>
-            </template>
-            <div class="rows" v-if="great4===false">
-                <div v-for="i in 4" :key="i">
-                    <VideoPlayer           
-                    :name = "data[i-1].name"
-                    :image = "data[i-1].image"
-                    :avatar = "data[i-1].avatar"
-                    :view="data[i-1].view" 
-                    :time="data[i-1].time"
-                    :author="data[i-1].author"
-                    :check="data[i-1].check"
-                    :link="data[i-1].link"
-                    :gif="data[i-1].gif"
-                    v-if="data[i-1]"
-                    ></VideoPlayer>
-                </div>
-            </div>
-        </div>
 
-        <div class="page-short" v-if="(idSelect == 1)">
-            <template >
-                <VideoShort 
-                v-for="item in shorts"
-                :source="item.source"
-                :like="item.like"
-                :comment="item.comment"
-                :author="item.author"
-                :avatar="item.avatar"
-                :key="item.source"
-                ></VideoShort>
-            </template>
-        </div>
+            <div class="page-short" v-if="(idSelect == 1)">
+                <template >
+                    <VideoShort 
+                    v-for="item in shorts"
+                    :source="item.source"
+                    :like="item.like"
+                    :comment="item.comment"
+                    :author="item.author"
+                    :avatar="item.avatar"
+                    :key="item.source"
+                    ></VideoShort>
+                </template>
+            </div>
 
-        <div class="library" v-if="(idSelect == 2)">
-            <p class="title-library">This year</p>
-            <template v-if="(length > 5)">
-            <div class="rows" v-for="idx in Math.ceil(this.length/4)" v-bind:key="idx">
-                <div v-for="i in 5" :key="i">
-                    <VideoSubscript        
-                    :name = "data[i-1+(idx-1)*4].name"
-                    :image = "data[i-1+(idx-1)*4].image"
-                    :view="data[i-1+(idx-1)*4].view" 
-                    :time="data[i-1+(idx-1)*4].time"
-                    :author="data[i-1+(idx-1)*4].author"
-                    :check="data[i-1+(idx-1)*4].check"
-                    :link="data[i-1+(idx-1)*4].link"
-                    :gif="data[i-1+(idx-1)*4].gif"
-                    v-if="data[i-1+(idx-1)*4]"
-                    ></VideoSubscript>
+            <div class="library" v-if="(idSelect == 2)">
+                <p class="title-library">This year</p>
+                <template v-if="(length > 5)">
+                <div class="rows" v-for="idx in Math.ceil(this.length/4)" v-bind:key="idx">
+                    <div v-for="i in 5" :key="i">
+                        <VideoSubscript        
+                        :name = "data[i-1+(idx-1)*4].name"
+                        :image = "data[i-1+(idx-1)*4].image"
+                        :view="data[i-1+(idx-1)*4].view" 
+                        :time="data[i-1+(idx-1)*4].time"
+                        :author="data[i-1+(idx-1)*4].author"
+                        :check="data[i-1+(idx-1)*4].check"
+                        :link="data[i-1+(idx-1)*4].link"
+                        :gif="data[i-1+(idx-1)*4].gif"
+                        v-if="data[i-1+(idx-1)*4]"
+                        ></VideoSubscript>
+                    </div>
+                </div>
+                </template>
+                <div class="rows" v-else>
+                    <div v-for="i in 5" :key="i">
+                        <VideoSubscript          
+                        :name = "data[i-1].name"
+                        :image = "data[i-1].image"
+                        :view="data[i-1].view" 
+                        :time="data[i-1].time"
+                        :author="data[i-1].author"
+                        :check="data[i-1].check"
+                        :link="data[i-1].link"
+                        :gif="data[i-1].gif"
+                        v-if="data[i-1]"
+                        ></VideoSubscript>
+                    </div>
                 </div>
             </div>
-            </template>
-            <div class="rows" v-else>
-                <div v-for="i in 5" :key="i">
-                    <VideoSubscript          
-                    :name = "data[i-1].name"
-                    :image = "data[i-1].image"
-                    :view="data[i-1].view" 
-                    :time="data[i-1].time"
-                    :author="data[i-1].author"
-                    :check="data[i-1].check"
-                    :link="data[i-1].link"
-                    :gif="data[i-1].gif"
-                    v-if="data[i-1]"
-                    ></VideoSubscript>
-                </div>
-            </div>
-        </div>
 
-        <div class="channel" v-if="(idSelect>=8 && idSelect <= 10)">
-            <ChannelYoutube :channel="author"></ChannelYoutube>
-        </div>
-        <div class="page-else" v-else>
-        </div>
+            <div class="channel" v-if="(idSelect>=8 && idSelect <= 10)">
+                <ChannelYoutube :channel="author"></ChannelYoutube>
+            </div>
+            <div class="page-else" v-else>
+            </div>
+        </template>
     </div> 
 </template>
 <script>
-    import VideoPlayer from './VideoPlayer.vue'
+    import VideoComponent from './VideoComponent.vue'
     import VideoShort from './VideoShort.vue'
     import VideoSubscript from './VideoSubscriptions.vue'
     import ChannelYoutube from './ChannelYoutube.vue'
+    import VideoPlayer from './VideoPlayer.vue'
 
     export default{
         name : 'ContentMain',
@@ -112,7 +130,11 @@
                 indexShort : 0,
                 length : 0,
                 great4 : false,
-                io : IntersectionObserver
+                list_video : [],
+                playingChild : {
+                    author : '',
+                    video : ''
+                }
             }
         },
         props:{
@@ -127,31 +149,64 @@
             },
             msg : String,
             data : Array,
+            dataVideo : Array,
             index : Number,
             filterTag : String,
             tag : Array,
             idSelect : Number,
-            shorts : Array
+            shorts : Array,
+            showSidebar : Boolean,
+            playing : {
+                author : String,
+                video : String
+            },
+            videoPlayer : {
+                iframe : String,
+                title : String,
+                description : String,
+                channel : {
+                    author : String,
+                    avatar : String,
+                    check : Boolean,
+                    subscribers : String
+                }
+            },
         },
         watch : {
-
+            playingChild : function(){
+                this.$emit('update:playing',this.playingChild)
+            }
         },
         methods:{
             filterbyTag : function(idx,value){
                 this.$emit('update:filterTag',value)
                 this.$emit('update:index',idx)
             },
+            playVideo : function(Author,videoName){
+                var playnow = {
+                    author:  Author,
+                    video : videoName
+                }
+                this.playingChild = playnow
+                this.$emit('update:showSidebar',false)
+                this.$emit('update:playing',playnow)
+            }
         },
         created : function() {
+            var self = this
             this.length = this.data.length
             this.great4 = this.length > 4
-            console.log("Author : ",this.author) 
+            this.dataVideo.forEach(function(item){
+                self.list_video.push(item)
+            })
+            this.list_video = this.list_video.sort( () => .5 - Math.random());
         },
         components : {
-            VideoPlayer,
+            VideoComponent,
             VideoShort,
             VideoSubscript,
-            ChannelYoutube
+            ChannelYoutube,
+            VideoPlayer
         }
     }
 </script>

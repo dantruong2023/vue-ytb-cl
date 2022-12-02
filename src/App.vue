@@ -4,22 +4,28 @@
   :search.sync="filter" 
   :is-extend.sync = "isExtend"
   :notification="notification"
-  :idSelect.sync="idSelect">
+  :idSelect.sync="idSelect"
+  :showSidebar.sync="showSidebar"
+  :key="keyHeader">
   </Header>
 
-  <SideBar id="sidebar" :idSelect.sync = "idSelect" v-if="isExtend == false" :key="keySidebar"></SideBar>
-  <SideBarExtend id="sidebarextend" :idSelect.sync = "idSelect" v-if="isExtend == true" :key="keySidebar"></SideBarExtend>
+  <SideBar id="sidebar" :idSelect.sync = "idSelect" v-if="(isExtend == false && showSidebar==true)" :key="keySidebar"></SideBar>
+  <SideBarExtend id="sidebarextend" :idSelect.sync = "idSelect" v-if="(isExtend == true && showSidebar==true )" :key="keySidebar"></SideBarExtend>
 
-  <ContentVideo id="content" :class="[{contentZoomOut : isExtend == true}]" 
+  <ContentMain id="content" :class="[{contentZoomOut : (isExtend == true && showSidebar==true)},{full : showSidebar == false}]" 
     :data="data" 
+    :dataVideo="dataVideo"
     :filterTag.sync="filterTag" 
     :key="keyChild"
     :index.sync="indexTag"
     :tag="tag"
     :idSelect="idSelect"
     :shorts="short"
-    :author="channel">
-  </ContentVideo>
+    :author="channel"
+    :showSidebar.sync="showSidebar"
+    :playing.sync="playing"
+    :videoPlayer="videoPlayer">
+  </ContentMain>
   </div>
 </template>
 
@@ -27,7 +33,7 @@
 import Header from './components/Header.vue'
 import SideBar from './components/Sidebar-Left.vue'
 import SideBarExtend from './components/Sidebar-LeftExtend.vue'
-import ContentVideo from './components/Content-Main.vue'
+import ContentMain from './components/Content-Main.vue'
 
 
 export default {
@@ -35,7 +41,7 @@ export default {
   components: {
     Header,
     SideBar,
-    ContentVideo,
+    ContentMain,
     SideBarExtend
   },
   watch:{
@@ -70,7 +76,7 @@ export default {
       self.keyChild = Math.ceil(Math.random() * 1000)%123 + ''
     },
     isExtend : function(){
-
+      this.keySidebar = Math.ceil(Math.random() * 1000)%123 + ''
     },
     idSelect : function(){
       var self = this
@@ -98,6 +104,28 @@ export default {
         })
       }
       self.keyChild = Math.ceil(Math.random() * 1000)%123 + ''
+    },
+    showSidebar : function(){
+      this.keyChild = Math.ceil(Math.random() * 1000)%123 + ''
+      this.keyHeader = Math.ceil(Math.random() * 1000)%123 + ''
+    },
+    playing: function(){
+        var self = this
+        self.dataVideo.forEach(function(item){
+            if(item.name == self.playing.video){
+                self.videoPlayer.iframe = item.iframe
+                self.videoPlayer.title = item.name
+                self.videoPlayer.description = item.description
+                self.videoPlayer.view = item.view
+                self.videoPlayer.time = item.time
+            }
+        })
+        self.authors.forEach(function(tacgia){
+            if(tacgia.author == self.playing.author){
+                self.videoPlayer.channel = tacgia
+            }
+        })
+        self.keyChild = Math.ceil(Math.random() * 1000)%123 + ''
     }
   },
   methods:{
@@ -134,7 +162,7 @@ export default {
                 item.author,
                 item.check,
                 self.convertToUser(item.author) + Math.floor(Math.random()*1000),
-                Math.ceil(Math.random()*998) + 'K',
+                Math.ceil(500+Math.random()*498) + 'K',
                 videos,
                 item.banner
           )
@@ -153,12 +181,31 @@ export default {
       indexTag : 0,
       tag : ['All','Music'],
       idSelect : 0,
+      showSidebar : true,
       isExtend : false,
       keyChild : '',
       keySidebar : 'key',
+      keyHeader : 'keyHeader',
       data : [],
       filter : 'start',
       filterTag : 'all',
+      playing : {
+          author : '',
+          video : ''
+      },
+      videoPlayer:{
+        iframe : '',
+        title : '',
+        description : '',
+        view : '',
+        time : '',
+        channel : {
+            author : '',
+            avatar : '',
+            check : false,
+            subscribers : ''
+        }
+      },
       author : function(avatar,author,verified,username,sub,videos,banner){
                 this.avatar = avatar
                 this.author = author
@@ -215,6 +262,7 @@ export default {
                         banner : 'binhgold.png',
                         check : true,
                         link : "https://youtu.be/r842vn9Os0Y",
+                        iframe : 'https://www.youtube.com/embed/cm9wwYJI9aw',
                         gif : 'bcdbl.gif',
                         tag : ['All','Music','Đan Trường','Bình Gold'],
                         description : 'BCDBL - Bình Gold | Bật Chế Độ Bay Lên | Nhạc Cực Căng'
@@ -230,6 +278,7 @@ export default {
                         banner : 'binhgold.png',
                         check : true,
                         link : "https://youtu.be/siEhdhxiqHg",
+                        iframe : 'https://www.youtube.com/embed/siEhdhxiqHg',
                         gif  : "obgtlh.gif",
                         tag : ['All','Music','Đan Trường','Bình Gold'],
                         description : 'Costume:  Venesto, SexyM, Bigent, Shadowiii3, Apex Solitaire Jewerly, the Suits house, Aobvns, DANG and madebyLYSKELI'
@@ -243,6 +292,7 @@ export default {
                         author : "Hùng Quân",
                         check : true,
                         link : "https://youtu.be/KI6TFG0-mTY",
+                        iframe : 'https://www.youtube.com/embed/KI6TFG0-mTY',
                         gif : "tptn.gif",
                         tag : ['All','Music','Đan Trường']
                     },
@@ -256,6 +306,7 @@ export default {
                         banner : 'ansez.png',
                         check : false,
                         link : "https://youtu.be/L5nVIDA5zFY",
+                        iframe : 'https://www.youtube.com/embed/L5nVIDA5zFY',
                         gif : "acc102.gif",
                         tag : ['All','Music','Đan Trường'],
                         description : 'ANH CHỈ CÓ 102 (02) | VINARAP (PINO REMIX) - JP LONG x KUZZ | ANSEZ RELEASE #ansez #vinarap #vinrapansez'
@@ -269,6 +320,7 @@ export default {
                         author : "Dolce Music",
                         check : false,
                         link : "https://youtu.be/-RqwGKFJbsE",
+                        iframe : 'https://www.youtube.com/embed/-RqwGKFJbsE',
                         gif : "lpn9.gif",
                         tag : ['All','Music','Đan Trường']
                     },
@@ -282,6 +334,7 @@ export default {
                         banner : 'binhgold.png',
                         check : true,
                         link : "https://youtu.be/gQ9U94eH7xQ",
+                        iframe : 'https://www.youtube.com/embed/gQ9U94eH7xQ',
                         gif : 'bbh.gif',
                         tag : ['All','Music','Đan Trường','Bình Gold'],
                         description : '✈ BỐC BÁT HỌ I BÌNH GOLD I NAM DUCK REMIX I PMT .'
@@ -295,6 +348,7 @@ export default {
                         author : "1967 Music",
                         check : false,
                         link : "https://youtu.be/CKgEdz3paa0",
+                        iframe : 'https://www.youtube.com/embed/CKgEdz3paa0',
                         gif : "hncv.gif",
                         tag : ['All','Music','Đan Trường']
                     },
@@ -307,6 +361,7 @@ export default {
                         author : "HOA HỒNG DẠI MUSIC",
                         check : false,
                         link : "https://youtu.be/xIyIP-fR7Xg",
+                        iframe : 'https://www.youtube.com/embed/wLGezGOd8o4',
                         gif : "cltc.gif",
                         tag : ['All','Music','Đan Trường']
                     },
@@ -319,6 +374,7 @@ export default {
                         author : "Djay Boy",
                         check : false,
                         link : "https://youtu.be/g4HygG78cT0",
+                        iframe : 'https://www.youtube.com/embed/g4HygG78cT0',
                         gif : "sxm.gif",
                         tag : ['All','Music','Đan Trường']
                     },
@@ -331,6 +387,7 @@ export default {
                         author : "Dinz Music",
                         check : false,
                         link : "https://youtu.be/o-e68Xjs2As",
+                        iframe : 'https://www.youtube.com/embed/o-e68Xjs2As',
                         gif : "goodies.gif",
                         tag : ['All','Music','Đan Trường']
                     },
@@ -343,6 +400,7 @@ export default {
                         author : "Sơn Tùng MTP",
                         check : true,
                         link : "https://youtu.be/Llw9Q6akRo4",
+                        iframe : 'https://www.youtube.com/embed/HZaShvbm8Q0',
                         gif : "lt.gif",
                         tag : ['All','Music','Đan Trường']
                     },
@@ -355,6 +413,7 @@ export default {
                         author : "BiliBili",
                         check : false,
                         link : "https://youtu.be/LJo0d9sASFI",
+                        iframe : 'https://www.youtube.com/embed/LJo0d9sASFI',
                         gif : "lcht.gif",
                         tag : ['All','Music','Đan Trường']
                     },
@@ -368,6 +427,7 @@ export default {
                         banner : 'andree.png',
                         check : true,
                         link : "https://youtu.be/p7YGAKeDPkM",
+                        iframe : 'https://www.youtube.com/embed/p7YGAKeDPkM',
                         gif : "ei.gif",
                         tag : ['All','Music','Đan Trường'],
                         description : 'Sponsored by $maker & Jagermeister Producer: 2pillz Director: Tungage & Minh Bi'
@@ -381,6 +441,7 @@ export default {
                         author : "Orinn Music",
                         check : false,
                         link : "https://youtu.be/5kT9DlHYiOE",
+                        iframe : 'https://www.youtube.com/embed/5kT9DlHYiOE',
                         gif : "odda.gif",
                         tag : ['All','Music','Đan Trường']
                     },
@@ -393,6 +454,7 @@ export default {
                         author : "1967 Music",
                         check : false,
                         link : "https://youtu.be/1VnsC7SgkBI",
+                        iframe : 'https://www.youtube.com/embed/1VnsC7SgkBI',
                         gif : "nchd.gif",
                         tag : ['All','Music','Đan Trường']
                     },
@@ -405,6 +467,7 @@ export default {
                         author : "Frexs Record",
                         check : false,
                         link : "https://youtu.be/1Y5AxyERJsA",
+                        iframe : 'https://www.youtube.com/embed/-lg7fOU8Hro',
                         gif : "dtnd.gif",
                         tag : ['All','Music','Đan Trường']
                     },
@@ -417,6 +480,7 @@ export default {
                         author : "Nhạc sàn remix",
                         check : false,
                         link : "https://youtu.be/erRTlNs8OkM",
+                        iframe : 'https://www.youtube.com/embed/GUYlSv5kPL0',
                         gif : "ocovdcc.gif",
                         tag : ['All','Music','Đan Trường']
                     },
@@ -429,6 +493,7 @@ export default {
                         author : "DJ AM Official",
                         check : false,
                         link : "https://youtu.be/bXZgaAc2BB8",
+                        iframe : 'https://www.youtube.com/embed/bXZgaAc2BB8',
                         gif : "pdh.gif",
                         tag : ['All','Music','Đan Trường']
                     }
@@ -474,6 +539,11 @@ html {
 
 html::-webkit-scrollbar {
     width: 0px; 
+}
+
+.full{
+    width: 100% !important;
+    margin-left : 0 !important;
 }
 
 #app {

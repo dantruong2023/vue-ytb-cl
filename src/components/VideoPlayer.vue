@@ -1,176 +1,277 @@
 <template>
-    <div class="item-video" v-on:click="navigate()" :title="name">
-        <img v-bind:src="link_image" alt="" >
-        <div class="content-video">
-            <div class="row" style="margin : 0px;">
-                <div class="avatar col col-2">
-                    <img v-bind:src="link_avatar" alt="" width="36px" height="36px" style="border-radius : 50%;">
+    <div>
+        <div class="left">
+           <iframe class="video" :src="iframe" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+           <h2 style="width : 100%; text-align: left; font-weight: 550;">{{ compact_title }}</h2>
+           <div class="owner">
+                <img class="avatar" :src="link_image" alt="">
+                <span class="author">{{channel.author}}</span>
+                <div class="check"  v-if="channel.check">
+                    <i class="ti-check"></i>
                 </div>
-                <div class="title col col-8">
-                    <p class="name-video">
-                        {{ title }}
-                    </p>
-                    <div class="author">
-                        {{ author }}
-                        <div class="check"  v-if="check">
-                            <i class="ti-check"></i>
-                        </div>
+                <button class="btn btn-subscribe">Subscribe</button>
+                <br> <br>
+                <span class="sub blur-text">{{channel.subscribers}} subscribers</span>
+           </div>
+           <div class="description">
+            <p>{{view }} views • {{time}} ago </p><br> <br>
+                {{description}}
+           </div>
+        </div>
+        <div class="right">
+            <div class="suggest" v-for="(item,index) in dataVideo" :key="item.index" @click="playVideo(item.author,item.name)">
+                <template v-if="(index<10)">
+                    <img class="video" :src="link_video(item.image)" alt="">
+                    <div>{{ compact_name(item.name)}} </div>
+                    <div class="info">
+                        <p class="blur-text">{{item.author}}</p> <br>
+                        <p class="blur-text">{{item.view}} views . {{item.time}} ago</p>
                     </div>
-                    <div class="view">
-                        <br>
-                        <p>{{ view }} views • {{ time }} ago</p>
-                    </div>
-                </div>
+                </template>
             </div>
         </div>
     </div>
 </template>
 <script>
-    //Length title max = 64 + 3(...) . substring(0,64)
-    export default{
-        name : 'VideoPlayer',
-        props: {
-            name : String,
-            view : String,
-            time : String,
-            avatar : String,
-            image : String,
+export default{
+    name : 'VideoPlayer',
+    props:{
+        iframe : String,
+        title : String,
+        description : String,
+        view : String,
+        time : String,
+        channel : {
             author : String,
+            avatar : String,
             check : Boolean,
-            link : String,
-            gif : String
+            subscribers : String
         },
-        computed : {
-            title : function(){
-                if(this.name.length > 61) { return this.name.substring(0,50) + '...'}
-                else return this.name
-            },
-            link_avatar : function(){
-                return "/assets/img/avatar/" + this.avatar
-            },
-            link_image : function(){
-                return "/assets/img/video/" + this.image
-            },
-            link_src : function(){
-                return this.link
-            },
-            link_gif : function(){
-                return "/assets/img/video/" + this.gif
-            }
-        },
-        methods : {
-            navigate : function(){
-                console.log(this.link);
-                window.location.href = this.link
-            },
-            hover : function(){
-                this.imgshow = this.link_gif == '' ? this.link_image : this.link_gif
-            },
-            dishover : function(){
-                this.imgshow = this.link_image
-            }
-        },
-        data() {
-            return {
-                imgshow : ''
-            }
-        },
-        created: function(){
-            this.imgshow = this.link_image
+        dataVideo : Array,
+        playing: {
+            author : String,
+            video : String
         }
+    },
+    methods: {
+        link_video : function(value){
+            return '/assets/img/video/' + value
+        },
+        compact_name : function(value){
+            if(value.length > 62) return value.substring(0,59) + '...'
+            return value
+        },
+        playVideo : function(Author,videoName){
+            var playnow = {
+                author:  Author,
+                video : videoName
+            }
+            this.$emit('update:playing',playnow)
+        }
+    },
+    computed : {
+        compact_title : function(){
+            if(this.title.length > 70) return this.title.substring(0,70) + '...'
+            return this.title
+        },
+        link_image : function(){
+            return '/assets/img/avatar/' + this.channel.avatar
+        },
+        
     }
+}
 </script>
 <style scoped>
 
-p{
-    padding-top : 4px;
-    text-align: left;
-    color : white;
-    font-weight: 400px;
-}
-.row {
-    margin-bottom: 40px;
-}
-
-.row::after{
-    content : '';
-    display: block;
-    clear: both;
-}
-
-.col{
-    float : left;
-    padding : 0 3px;
-}
-
-.col-2{
-    width: 20%;
-}
-
-.col-8{
-    width: 75%;
-}
-
-
-
-.content-video{
-    width: 100%;
-    height : 100px;
-    /* background-color: brown; */
-    padding-top : 8px;
-}
-
-.item-video{
-  cursor: pointer;
-  float : left;
-  margin : 0 8px 0 8px;
-  width: calc(26% - 36px);
-  height : 300px;
-  /* background-color: white; */
-}
-
-.item-video > img{
-    width: 100%;
-    height : 200px;
-    border-radius: 5%;
-}
-
-.item-video > img:hover{
+.blur-text{
     opacity: 0.6;
-    border-radius: 5%;
+    font-size: 15px;
+    color : rgb(149, 135, 135);
+}
+.left{
+    width: 62%;
+    float : left;
+    box-sizing: border-box;
+}
+
+.right{
+    box-sizing: border-box;
+    padding: 0 16px;
+    width: 35%;
+    height: 100%;
+    float : right;
+}
+
+.right::after{
+    content: '';
+    display: block;
+    margin-bottom: 250px;
+    clear : both;
+}
+
+
+.left::after,.suggest::after{
+    content: '';
+    display: block;
+    margin-bottom: 500px;
+    clear : both;
+}
+
+
+.left *{
+    float : left;
+    margin-bottom: 12px;
+    color : #fff;
+}
+
+.left .video{
+    width : 956px; 
+    height : 538px;
+}
+.owner{
+    display: inline-block;
+    width: 100%;
+    position: relative;
+}
+
+.avatar{
+    --size : 48px;
+    width: var(--size);
+    height: var(--size);
+    border-radius: 50%;
 }
 
 .author{
-    opacity: 0.6;
-    float : left;
-    padding-top : 4px;
-    color : rgb(170,170,170)
+    font-weight: bold;
+    margin-left : 24px;
+    margin-bottom: 0;
+}
+
+.check{
+    --size : 17px;
+    width: var(--size);
+    height: var(--size);
+    margin-top : -1px;
+    border-radius: 50%;
+    background-color: rgb(149, 135, 135) !important;
+    text-align: center;
+    margin-left : 10px;
 }
 
 i.ti-check{
-    font-size: 12px;
-}   
-
-div.check{
-    --size : 18px;
-    opacity: 1;
-    width : var(--size);
-    height : var(--size);
-    background-color: rgb(149, 135, 135) !important;
-    border-radius: 50%;
-    color : white;
-    float : right;
-    margin-left : 7px;
+    font-size : 12px;
+    line-height: var(--size);
+    padding-left : 2px;
+}
+.sub{
+    margin-left : 24px;
+}
+.btn, .react{
+    float :none;
+    padding : 8px 16px;
+    font-weight: 600;
+    border-radius: 20px;
+    transform: translateY(-50%);
+    color : #333;
+    position: absolute;
+    top : 50%;
 }
 
-.view{
-    padding-top : 8px;
+.btn:hover{
+    background-color: #333;
+    color : #fff;
+    cursor: pointer;
 }
 
-.view p{
-    font-size: 14px;
+.react{
+    position: absolute;
+    top : 50%;
+    left : 50%;
+}
+
+.react button{
+    background-color : #333;
+    color : #fff;
+    padding : 8px 24px;
+    font-weight: 500;
+    line-height: 27px;
+    border : none;
+}
+
+.react button:hover, .react button:hover i{
+    background-color: #fff;
+    color : #333;
+    cursor: pointer;
+}
+
+.react button.like{
+    border-radius: 20px 0 0 20px;
+    padding : 8px 36px;
+    border-right: 0.01rem solid #fff;
+}
+
+.react button.dislike{
+    border-radius: 0px 20px 20px 0 ;
+}
+
+.react i{
+    margin-top : 5px;
+}
+
+
+.btn-subscribe{
+    left : 30%
+}
+
+button.ti-share{
+    position: absolute;
+    right : -50%;
+    padding : 10px 24px;
+    border-radius: 20px;
+}
+
+div.description{
+    background-color: rgba(255, 255, 255, 0.1);
+    width: 100%;
+    max-height: 500px;
+    min-height: 175px;
+    border-radius : 20px;
+    text-align: left;
+    padding : 16px 8px;
+}
+
+.suggest{
+    max-height: 150px;
+    --left : 12px;
+}
+
+.suggest:hover{
+    cursor: pointer;
+}
+.suggest *{
+    float : left;
+}
+
+.suggest .video{
+    height: 100px;
+    width: 200px;
+    border-radius: 15px;
+    margin-bottom: 32px;
+    margin-right : 16px;
+}
+.suggest .video:hover{
     opacity: 0.6;
 }
+.suggest div{
+    color : #fff;
+    float : none;
+    text-align: left;
+    padding-right : 32px;
+}   
 
+.suggest .info{
+    box-sizing: border-box;
+    margin-top: 20px;
+}
 
 </style>

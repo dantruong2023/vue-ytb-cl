@@ -129,6 +129,9 @@
 </script>
     
 <style scoped>
+*{
+    user-select: none;
+}
 
 div{
     color : white;
