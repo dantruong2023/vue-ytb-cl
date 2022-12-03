@@ -15,7 +15,7 @@
                     <span class="left white blur-text">{{channel.subscribers}} subscribers</span>
                 </div>
                 <div class="subscribe">
-                    <button class="btn-subscribe">Subscribe</button>
+                    <button class="btn-subscribe" :class="[{subscribed : sub=='Subscribed'}]" @click="subscribe()">{{sub}}</button>
                 </div>
             </div>
         </div>
@@ -28,7 +28,7 @@
         </div>
         <hr>
         <div class="content">
-            <div class="video" v-for="item in channel.videos" :key="item.name">
+            <div class="video" v-for="item in channel.videos" :key="item.name" @click="playVideo(item.author,item.name)">
                 <img class="image-video left" :src="link_image(item.image)" alt="">
                 <p class="left white">{{ compact_name(item.name) }}</p> <br> <br>
                 <span class="left blur-text">{{ item.author }}</span>
@@ -48,7 +48,12 @@
         data(){
             return {
                 select : 0,
-                link_img : ''
+                link_img : '',
+                selfPlaying : {
+                    author : '',
+                    video : ''
+                },
+                sub : 'Subscribe'
             }
         },
         props:{
@@ -60,9 +65,16 @@
                 subscribers : String,
                 videos : Array,
                 banner : String
+            },
+            playing : {
+                author : String,
+                video : String
             }
         },
         methods : {
+            subscribe : function(){
+                this.sub = this.sub == 'Subscribe'?'Subscribed' : 'Subscribe';
+            },
             compact_name : function(value){
                 if(value.length >=50 )
                 return value.substring(0,47) + '...' 
@@ -90,6 +102,14 @@
             },
             hover : function(item){
                 this.link_img = this.link_image(item.gif)
+            },
+            playVideo : function(Author,videoName){
+                var playnow = {
+                    author:  Author,
+                    video : videoName
+                }
+                this.selfPlaying = playnow
+                this.$emit('update:playing',this.selfPlaying)
             }
         }
     }
@@ -193,6 +213,12 @@ div.check{
     transform: translateY(-50%);
 }
 
+.subscribed{
+    background-color: #333 !important;
+    color : #fff !important;
+}
+
+
 .header::after{
     content: '';
     display: block;
@@ -224,6 +250,7 @@ div.check{
 
 .content{
     margin-top : 32px;
+    cursor : pointer;
 }
 
 .video::after{

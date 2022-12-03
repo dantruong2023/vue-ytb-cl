@@ -72,21 +72,21 @@
                 </template>
             </div>
 
-            <div class="library" v-if="(idSelect == 2)">
-                <p class="title-library">This year</p>
+            <div class="subscription" v-if="(idSelect == 2)">
+                <p class="title-subscription">This year</p>
                 <template v-if="(length > 5)">
                 <div class="rows" v-for="idx in Math.ceil(this.length/4)" v-bind:key="idx">
                     <div v-for="i in 5" :key="i">
                         <VideoSubscript        
-                        :name = "data[i-1+(idx-1)*4].name"
-                        :image = "data[i-1+(idx-1)*4].image"
-                        :view="data[i-1+(idx-1)*4].view" 
-                        :time="data[i-1+(idx-1)*4].time"
-                        :author="data[i-1+(idx-1)*4].author"
-                        :check="data[i-1+(idx-1)*4].check"
-                        :link="data[i-1+(idx-1)*4].link"
-                        :gif="data[i-1+(idx-1)*4].gif"
-                        v-if="data[i-1+(idx-1)*4]"
+                        :name = "data[i-1+(idx-1)*5].name"
+                        :image = "data[i-1+(idx-1)*5].image"
+                        :view="data[i-1+(idx-1)*5].view" 
+                        :time="data[i-1+(idx-1)*5].time"
+                        :author="data[i-1+(idx-1)*5].author"
+                        :check="data[i-1+(idx-1)*5].check"
+                        :link="data[i-1+(idx-1)*5].link"
+                        :gif="data[i-1+(idx-1)*5].gif"
+                        v-if="data[i-1+(idx-1)*5]"
                         ></VideoSubscript>
                     </div>
                 </div>
@@ -109,7 +109,10 @@
             </div>
 
             <div class="channel" v-if="(idSelect>=8 && idSelect <= 10)">
-                <ChannelYoutube :channel="author"></ChannelYoutube>
+                <ChannelYoutube 
+                    :channel="author"
+                    :playing.sync ="playingChild">
+                </ChannelYoutube>
             </div>
             <div class="page-else" v-else>
             </div>
@@ -175,6 +178,7 @@
         watch : {
             playingChild : function(){
                 this.$emit('update:playing',this.playingChild)
+                this.playVideo(this.playingChild.author,this.playingChild.video)
             }
         },
         methods:{
@@ -187,7 +191,6 @@
                     author:  Author,
                     video : videoName
                 }
-                this.playingChild = playnow
                 this.$emit('update:showSidebar',false)
                 this.$emit('update:playing',playnow)
             }
@@ -267,8 +270,8 @@ div.categories::after{
 
 
 
-/* Library */
-p.title-library{
+/* Subscription */
+p.title-subscription{
     text-align: left;
     margin-left : 16px;
     font-size: 16px;
