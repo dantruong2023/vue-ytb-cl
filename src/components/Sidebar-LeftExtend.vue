@@ -16,7 +16,7 @@
             </div>
         <hr>
         <div class="block">
-            <div class="library" v-bind:class="[{active : selected === 3}]" @click="change(3)">
+            <div class="library" v-bind:class="[{active : selected === 99}]" @click="change(99)">
                 <i class="ti-gallery"></i>
                 <span>Library</span>
             </div>
@@ -40,18 +40,14 @@
         <hr>
         <div class="block">
             <p class="title">Subscriptions</p>
-            <div v-bind:class="[{active : selected === 8}]" @click="change(8)">
-                <img src="/assets/img/avatar/binhgold.jfif" alt="">
-                <span>Bình Gold</span>
-            </div>
-            <div v-bind:class="[{active : selected === 9}]" @click="change(9)">
-                <img src="/assets/img/avatar/ansez.png" alt="">
-                <span>Ansez</span>
-            </div>
-            <div v-bind:class="[{active : selected === 10}]" @click="change(10)">
-                <img src="/assets/img/avatar/andree.jpg" alt="">
-                <span>Andree Right Hand</span>
-            </div>
+            <div v-for="subscribe of user.subscribe" :key="subscribe" style="padding :0;margin : 0;">
+                <div v-bind:class="[{active : selectchannel === subscribe}]" @click="selectChannel(subscribe)">
+                    <template v-for="channel of authors" >
+                        <img v-if="(channel.author == subscribe)" :src='("/assets/img/avatar/"+channel.avatar)' :key="channel.author">
+                    </template>
+                    <span>{{ compact_channel(subscribe) }}</span>
+                </div>
+            </div>  
         </div>
         <hr>
         <div class="block">
@@ -105,11 +101,24 @@
         name : 'Sidebar_LeftExtend',
         data() {
             return {
-                selected : 0
+                selected : 0,
+                selectchannel : ''
             }
         },
         props: {
-            idSelect : Number
+            idSelect : Number,
+            user : {
+                author : String,
+                avatar : String,
+                check : Boolean,
+                username : String,
+                subscribers : String,
+                subscribe : Array,
+                videos : Array,
+                banner : String
+            },
+            authors : Array,
+            authorView : String
         },
         created : function(){
             this.selected = this.idSelect
@@ -117,6 +126,15 @@
         methods : {
             change : function(number){
                 this.selected = number
+            },
+            selectChannel : function(value){
+                this.selectchannel = value
+                this.selected = 3 // 3 là kích hoạt xem profile của page khác để hiện view ở Channel trong content-main
+                this.$emit('update:authorView',value)
+            },
+            compact_channel : function(value){
+                if(value.length > 17) return value.substring(0,14) + '...'
+                return value
             }
         },
         watch : {
@@ -213,8 +231,4 @@ hr{
     background-color: rgba(255, 255, 255, 0.1);
     border-radius: 10px;
 }
-
-
-
-
 </style>

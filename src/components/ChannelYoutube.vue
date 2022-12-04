@@ -15,7 +15,7 @@
                     <span class="left white blur-text">{{channel.subscribers}} subscribers</span>
                 </div>
                 <div class="subscribe">
-                    <button class="btn-subscribe" :class="[{subscribed : sub=='Subscribed'}]" @click="subscribe()">{{sub}}</button>
+                    <button class="btn-subscribe" :class="[{subscribed : sub=='Subscribed'}]" v-if="(currentUser !== channel.author)" @click="subscribe()">{{sub}}</button>
                 </div>
             </div>
         </div>
@@ -53,10 +53,12 @@
                     author : '',
                     video : ''
                 },
-                sub : 'Subscribe'
+                sub : 'Subscribe',
+                selfUser : {}
             }
         },
         props:{
+            currentUser : String,
             channel : {
                 avatar : String,
                 author : String,
@@ -69,11 +71,38 @@
             playing : {
                 author : String,
                 video : String
+            },
+            user : {
+                name : String,
+                avatar : String,
+                check : Boolean,
+                username : String,
+                subscribers : String,
+                subscribe : Array,
+                videos : Array,
+                banner : String
+            }
+        },
+        created : function(){
+            for(var key in this.user){
+                this.selfUser[key] = this.user[key]
+            }
+            if(this.selfUser.subscribe.includes(this.channel.author)){
+                this.sub = 'Subscribed'
             }
         },
         methods : {
             subscribe : function(){
                 this.sub = this.sub == 'Subscribe'?'Subscribed' : 'Subscribe';
+                if(this.sub == 'Subscribed'){
+                    if(this.selfUser.subscribe.indexOf(this.channel.author) == -1) this.selfUser.subscribe.push(this.channel.author)
+                }
+                else {
+                    if(this.selfUser.subscribe.indexOf(this.channel.author) != -1){
+                        this.selfUser.subscribe.splice(this.selfUser.subscribe.indexOf(this.channel.author),1)
+                    }
+                }
+                this.$emit('update:user',this.selfUser)
             },
             compact_name : function(value){
                 if(value.length >=50 )
@@ -111,7 +140,7 @@
                 this.selfPlaying = playnow
                 this.$emit('update:playing',this.selfPlaying)
             }
-        }
+        },
     }
 </script>
 <style scoped>

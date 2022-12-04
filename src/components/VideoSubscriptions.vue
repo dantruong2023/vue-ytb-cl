@@ -1,5 +1,5 @@
 <template>
-    <div class="item-video" v-on:click="navigate()" :title="name">
+    <div class="item-video" :title="name">
         <img v-bind:src="imgshow" v-on:mouseover="hover()" v-on:mouseleave="dishover()" alt="" >
         <div class="content-video">
             <div class="row" style="margin : 0px;">
@@ -159,6 +159,4 @@ div.check{
     font-size: 14px;
     opacity: 0.6;
 }
-
-
 </style>

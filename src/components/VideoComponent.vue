@@ -45,6 +45,8 @@
             check : Boolean,
             link : String,
             gif : String,
+
+            idSelect : Number
         },
         computed : {
             title : function(){
@@ -168,6 +170,4 @@ div.check{
     font-size: 14px;
     opacity: 0.6;
 }
-
-
 </style>

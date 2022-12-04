@@ -6,11 +6,19 @@
   :notification="notification"
   :idSelect.sync="idSelect"
   :showSidebar.sync="showSidebar"
+  :avatar="user.avatar"
   :key="keyHeader">
   </Header>
 
   <SideBar id="sidebar" :idSelect.sync = "idSelect" v-if="(isExtend == false && showSidebar==true)" :key="keySidebar"></SideBar>
-  <SideBarExtend id="sidebarextend" :idSelect.sync = "idSelect" v-if="(isExtend == true && showSidebar==true )" :key="keySidebar"></SideBarExtend>
+  <SideBarExtend id="sidebarextend" 
+    :idSelect.sync = "idSelect" 
+    v-if="(isExtend == true && showSidebar==true )" 
+    :key="keySidebar"
+    :user="user"
+    :authors="authors"
+    :authorView.sync = "authorView">
+  </SideBarExtend>
 
   <ContentMain id="content" :class="[{contentZoomOut : (isExtend == true && showSidebar==true)},{full : showSidebar == false}]" 
     :data="data" 
@@ -24,7 +32,9 @@
     :author="channel"
     :showSidebar.sync="showSidebar"
     :playing.sync="playing"
-    :videoPlayer="videoPlayer">
+    :videoPlayer="videoPlayer"
+    :user.sync = "user"
+    :authorView.sync="authorView">
   </ContentMain>
   </div>
 </template>
@@ -80,28 +90,16 @@ export default {
     },
     idSelect : function(){
       var self = this
-      if(this.idSelect >= 8 && this.idSelect <= 10){
-        var name = ''
-        switch(this.idSelect){
-          case 8 : {
-            name = 'Bình Gold'
-            break
-          }
-          case 9 : {
-            name = 'Ansez'
-            break
-          }
-          case 10 : {
-            name = 'Andree Right Hand'
-            break
-          }
+      switch(this.idSelect){
+        case -1 : {
+          this.showSidebar = true
+          self.keyChild = Math.ceil(Math.random() * 1000)%123 + ''
+          this.keySidebar = Math.ceil(Math.random() * 1000)%123 + ''
+          break
         }
-        this.authors.forEach(function(channel){
-          if(name == channel.author){
-            self.channel = channel
-            return
-          }
-        })
+        case 0 : {
+          this.keySidebar = Math.ceil(Math.random() * 1000)%123 + ''
+        }
       }
       self.keyChild = Math.ceil(Math.random() * 1000)%123 + ''
     },
@@ -126,9 +124,50 @@ export default {
             }
         })
         self.keyChild = Math.ceil(Math.random() * 1000)%123 + ''
+    },
+    authorView : function(){ //Watch này để lắng nghe khi mà thay đổi profile định xem trong sidebar-extend
+      var self = this
+      this.showSidebar = true
+      this.idSelect = 3
+      this.channel = this.authors.find(function(channel){
+          return self.authorView == channel.author
+        })
+      this.keyChild = Math.ceil(Math.random() * 1000)%123 + ''
+    },
+    user : function(){
+      this.keySidebar = Math.ceil(Math.random() * 10000)%123 + ''
     }
   },
   methods:{
+    loadJSON:function(file,type,data)
+    {
+          var rawFile = new XMLHttpRequest();
+          rawFile.open("GET", file, false);
+          rawFile.onreadystatechange = function ()
+          {
+              if(rawFile.readyState === 4)
+              {
+                  if(rawFile.status === 200 || rawFile.status == 0)
+                  {
+                      var allText = rawFile.responseText;
+                      var tmp = JSON.parse(allText)
+                      if(type=="array"){
+                        tmp.forEach(function(item){
+                          data.push(item)
+                        })
+                      }else if(type=="object"){
+                        for(var i in tmp){
+                          data[i] = tmp[i]
+                        }
+                      }
+                      
+                      return ''
+                  }
+              }
+          }
+          rawFile.send(null);
+          return ''
+    },
     convertToUser : function(str){
         str = str.toLowerCase();
         str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g, "a");
@@ -141,9 +180,25 @@ export default {
         str = str.replace(/\u0300|\u0301|\u0303|\u0309|\u0323/g, ""); // Huyền sắc hỏi ngã nặng 
         str = str.replace(/\u02C6|\u0306|\u031B/g, ""); // Â, Ê, Ă, Ơ, Ư
         return str.replaceAll(' ','');
+    },
+    loadVideo : function(channel){
+        // var self = this
+        this.dataVideo.forEach(function(item){
+            if(channel.author == item.author){
+                channel.videos.push(item)
+            }
+        })
     }
   },
   created: function() {
+    // Load data from file
+    this.loadJSON('/data/video.txt',"array",this.dataVideo)
+    this.loadJSON('/data/notification.txt',"array",this.notification)
+    this.loadJSON('/data/shorts.txt',"array",this.short)
+    this.loadJSON('/data/user.txt',"object",this.user)
+
+    this.loadVideo(this.user)
+    this.authors.push(this.user)
     var self = this
     this.filter = ''
     this.dataVideo.forEach(function(item){
@@ -184,11 +239,13 @@ export default {
       showSidebar : true,
       isExtend : false,
       keyChild : '',
-      keySidebar : 'key',
+      keySidebar : 'keySidebar',
       keyHeader : 'keyHeader',
-      data : [],
+      data : [], //Data video truyền vào home
+      authorView : '', //Channel khi bấm vào xem ở Sidebar-extend
       filter : 'start',
       filterTag : 'all',
+      user : {},
       playing : {
           author : '',
           video : ''
@@ -219,308 +276,9 @@ export default {
 
       ],
       channel : '',
-      notification : [
-        {
-          avatar : 'avatar.jpg',
-          content : 'Technology used : Html - CSS - VueJS - icons global',
-          time : '0 giây trước',
-          img : ''
-        },
-        {
-          avatar : 'hungquan.jpg',
-          content : 'Hùng Quân đã tải lên: Tiếng pháo tiễn người',
-          time : '13 ngày trước',
-          img : 'tptn.jpg'
-        },
-        {
-          avatar : 'binhgold.jfif',
-          content : 'Bình Gold đã tải lên: Bật chế độ bay lên - Bình Gold',
-          time : '2 tháng trước',
-          img : 'bcdbl.jpg'
-        },
-        {
-          avatar : 'binhgold.jfif',
-          content : 'Bình Gold đã tải lên: Ông bà già tao lo hết - Bình Gold',
-          time : '8 tháng trước',
-          img : 'obgtlh.jpg'
-        },
-        {
-          avatar : 'andree.jpg',
-          content : 'Andree Right Hand đã tải lên: Em iu - Andree Right Hand ft. Wxrdie x Bình Gold x 2pillz',
-          time : '11 tháng trước',
-          img : 'ei.jpg'
-        }
-      ],
-      dataVideo : [
-                    {
-                        name :"Bật chế độ bay lên - Bình Gold",
-                        image  : "bcdbl.jpg",
-                        avatar  : "binhgold.jfif",
-                        view :"985K" ,
-                        time :"2 months",
-                        author : "Bình Gold",
-                        banner : 'binhgold.png',
-                        check : true,
-                        link : "https://youtu.be/r842vn9Os0Y",
-                        iframe : 'https://www.youtube.com/embed/cm9wwYJI9aw',
-                        gif : 'bcdbl.gif',
-                        tag : ['All','Music','Đan Trường','Bình Gold'],
-                        description : 'BCDBL - Bình Gold | Bật Chế Độ Bay Lên | Nhạc Cực Căng'
-                        
-                    },
-                    {
-                        name :"Ông bà già tao lo hết - Bình Gold",
-                        image  : "obgtlh.jpg",
-                        avatar  : "binhgold.jfif",
-                        view :"1.4M" ,
-                        time :"8 months",
-                        author : "Bình Gold",
-                        banner : 'binhgold.png',
-                        check : true,
-                        link : "https://youtu.be/siEhdhxiqHg",
-                        iframe : 'https://www.youtube.com/embed/siEhdhxiqHg',
-                        gif  : "obgtlh.gif",
-                        tag : ['All','Music','Đan Trường','Bình Gold'],
-                        description : 'Costume:  Venesto, SexyM, Bigent, Shadowiii3, Apex Solitaire Jewerly, the Suits house, Aobvns, DANG and madebyLYSKELI'
-                    },
-                    {
-                        name :"Tiếng pháo tiễn người",
-                        image  : "tptn.jpg",
-                        avatar  : "hungquan.jpg",
-                        view :"186K" ,
-                        time :"13 days",
-                        author : "Hùng Quân",
-                        check : true,
-                        link : "https://youtu.be/KI6TFG0-mTY",
-                        iframe : 'https://www.youtube.com/embed/KI6TFG0-mTY',
-                        gif : "tptn.gif",
-                        tag : ['All','Music','Đan Trường']
-                    },
-                    {
-                        name :"ANH CHỈ CÓ 102 (02) | VINARAP - JP LONG x KUZZ",
-                        image  : "acc102.jpg",
-                        avatar  : "ansez.png",
-                        view :"400K" ,
-                        time :"5 months",
-                        author : "Ansez",
-                        banner : 'ansez.png',
-                        check : false,
-                        link : "https://youtu.be/L5nVIDA5zFY",
-                        iframe : 'https://www.youtube.com/embed/L5nVIDA5zFY',
-                        gif : "acc102.gif",
-                        tag : ['All','Music','Đan Trường'],
-                        description : 'ANH CHỈ CÓ 102 (02) | VINARAP (PINO REMIX) - JP LONG x KUZZ | ANSEZ RELEASE #ansez #vinarap #vinrapansez'
-                    },
-                    {
-                        name :"Love potion number 9",
-                        image  : "lpn9.jpg",
-                        avatar  : "dolce.jpg",
-                        view :"1.1M" ,
-                        time :"11 months",
-                        author : "Dolce Music",
-                        check : false,
-                        link : "https://youtu.be/-RqwGKFJbsE",
-                        iframe : 'https://www.youtube.com/embed/-RqwGKFJbsE',
-                        gif : "lpn9.gif",
-                        tag : ['All','Music','Đan Trường']
-                    },
-                    {
-                        name :"Bốc bát họ | Bình Gold",
-                        image  : "bbh.jpg",
-                        avatar  : "binhgold.jfif",
-                        view :"874K" ,
-                        time :"3 months",
-                        author : "Bình Gold",
-                        banner : 'binhgold.png',
-                        check : true,
-                        link : "https://youtu.be/gQ9U94eH7xQ",
-                        iframe : 'https://www.youtube.com/embed/gQ9U94eH7xQ',
-                        gif : 'bbh.gif',
-                        tag : ['All','Music','Đan Trường','Bình Gold'],
-                        description : '✈ BỐC BÁT HỌ I BÌNH GOLD I NAM DUCK REMIX I PMT .'
-                    },
-                    {
-                        name :"Hết nhạc con về",
-                        image  : "hncv.jpg",
-                        avatar  : "1967.jpg",
-                        view :"200K" ,
-                        time :"2 months",
-                        author : "1967 Music",
-                        check : false,
-                        link : "https://youtu.be/CKgEdz3paa0",
-                        iframe : 'https://www.youtube.com/embed/CKgEdz3paa0',
-                        gif : "hncv.gif",
-                        tag : ['All','Music','Đan Trường']
-                    },
-                    {
-                        name :"Chạnh lòng thương cô",
-                        image  : "cltc.jpg",
-                        avatar  : "hhd.jpg",
-                        view :"357K" ,
-                        time :"10 months",
-                        author : "HOA HỒNG DẠI MUSIC",
-                        check : false,
-                        link : "https://youtu.be/xIyIP-fR7Xg",
-                        iframe : 'https://www.youtube.com/embed/wLGezGOd8o4',
-                        gif : "cltc.gif",
-                        tag : ['All','Music','Đan Trường']
-                    },
-                    {
-                        name :"Sang Xịn Mịn REMIX - Gill ft. Kewtiie x CUKAK",
-                        image  : "sxm.jpg",
-                        avatar  : "djay.jpg",
-                        view :"198K" ,
-                        time :"6 months",
-                        author : "Djay Boy",
-                        check : false,
-                        link : "https://youtu.be/g4HygG78cT0",
-                        iframe : 'https://www.youtube.com/embed/g4HygG78cT0',
-                        gif : "sxm.gif",
-                        tag : ['All','Music','Đan Trường']
-                    },
-                    {
-                        name :"Goodie - Tbynz",
-                        image  : "goodies.jpg",
-                        avatar  : "dinz.jpg",
-                        view :"786K" ,
-                        time :"1 year",
-                        author : "Dinz Music",
-                        check : false,
-                        link : "https://youtu.be/o-e68Xjs2As",
-                        iframe : 'https://www.youtube.com/embed/o-e68Xjs2As',
-                        gif : "goodies.gif",
-                        tag : ['All','Music','Đan Trường']
-                    },
-                    {
-                        name :"Lạc Trôi Remix - Sơn Tùng M-TP",
-                        image  : "lt.jpg",
-                        avatar  : "sontung.jpg",
-                        view :"1.3M" ,
-                        time :"3 years",
-                        author : "Sơn Tùng MTP",
-                        check : true,
-                        link : "https://youtu.be/Llw9Q6akRo4",
-                        iframe : 'https://www.youtube.com/embed/HZaShvbm8Q0',
-                        gif : "lt.gif",
-                        tag : ['All','Music','Đan Trường']
-                    },
-                    {
-                        name :"Lạc Chốn Hồng Trần Remix Lã Phong Lâm x Đại Mèo",
-                        image  : "lcht.jfif",
-                        avatar  : "bili.jpg",
-                        view :"553K" ,
-                        time :"9 months",
-                        author : "BiliBili",
-                        check : false,
-                        link : "https://youtu.be/LJo0d9sASFI",
-                        iframe : 'https://www.youtube.com/embed/LJo0d9sASFI',
-                        gif : "lcht.gif",
-                        tag : ['All','Music','Đan Trường']
-                    },
-                    {
-                        name :"Em iu - Andree Right Hand ft. Wxrdie x Bình Gold x 2pillz",
-                        image  : "ei.jpg",
-                        avatar  : "andree.jpg",
-                        view :"998K" ,
-                        time :"11 months",
-                        author : "Andree Right Hand",
-                        banner : 'andree.png',
-                        check : true,
-                        link : "https://youtu.be/p7YGAKeDPkM",
-                        iframe : 'https://www.youtube.com/embed/p7YGAKeDPkM',
-                        gif : "ei.gif",
-                        tag : ['All','Music','Đan Trường'],
-                        description : 'Sponsored by $maker & Jagermeister Producer: 2pillz Director: Tungage & Minh Bi'
-                    },
-                    {
-                        name :"Ơ Động Đất À? Không Phải Đấy Là Bọn Anh Đang Đi Lên - VÂN RUNG",
-                        image  : "odda.jpg",
-                        avatar  : "orinn.jpg",
-                        view :"400K" ,
-                        time :"3 months",
-                        author : "Orinn Music",
-                        check : false,
-                        link : "https://youtu.be/5kT9DlHYiOE",
-                        iframe : 'https://www.youtube.com/embed/5kT9DlHYiOE',
-                        gif : "odda.gif",
-                        tag : ['All','Music','Đan Trường']
-                    },
-                    {
-                        name :"16 Typh - Người Chơi Hệ Đẹp「Cukak Remix」",
-                        image  : "nchd.jpg",
-                        avatar  : "1967.jpg",
-                        view :"603K" ,
-                        time :"5 months",
-                        author : "1967 Music",
-                        check : false,
-                        link : "https://youtu.be/1VnsC7SgkBI",
-                        iframe : 'https://www.youtube.com/embed/1VnsC7SgkBI',
-                        gif : "nchd.gif",
-                        tag : ['All','Music','Đan Trường']
-                    },
-                    {
-                        name :"Đoạn Tuyệt Nàng Đi Ver2 Remix",
-                        image  : "dtnd.jpg",
-                        avatar  : "frexs.jpg",
-                        view :"800K" ,
-                        time :"1 year",
-                        author : "Frexs Record",
-                        check : false,
-                        link : "https://youtu.be/1Y5AxyERJsA",
-                        iframe : 'https://www.youtube.com/embed/-lg7fOU8Hro',
-                        gif : "dtnd.gif",
-                        tag : ['All','Music','Đan Trường']
-                    },
-                    {
-                        name :"Ông Cháu Ơi Về Đội Của Chú | WanGanh Remix",
-                        image  : "ocovdcc.jpg",
-                        avatar  : "nhacsan.jpg",
-                        view :"712K" ,
-                        time :"8 months",
-                        author : "Nhạc sàn remix",
-                        check : false,
-                        link : "https://youtu.be/erRTlNs8OkM",
-                        iframe : 'https://www.youtube.com/embed/GUYlSv5kPL0',
-                        gif : "ocovdcc.gif",
-                        tag : ['All','Music','Đan Trường']
-                    },
-                    {
-                        name :"Phong dạ hành Remix",
-                        image  : "pdh.jpg",
-                        avatar  : "djam.jpg",
-                        view :"103K" ,
-                        time :"3 months",
-                        author : "DJ AM Official",
-                        check : false,
-                        link : "https://youtu.be/bXZgaAc2BB8",
-                        iframe : 'https://www.youtube.com/embed/bXZgaAc2BB8',
-                        gif : "pdh.gif",
-                        tag : ['All','Music','Đan Trường']
-                    }
-                ],
-      short:[
-        {
-          avatar : 'dinz.jpg',
-          author : 'Dinz',
-          source : 'spiderman.mp4',
-          like : '421K',
-          comment : '25.9K'
-        },
-        {
-          avatar : 'avatar.jpg',
-          author : 'Đan Trường',
-          source : 'cake.mp4',
-          like : '89.3K',
-          comment : '6.1K'
-        },
-        {
-          avatar : 'mylove.jpg',
-          author : 'Thu Trang',
-          source : 'anvat.mp4',
-          like : '189.7K',
-          comment : '13.4K'
-        }
-      ]
+      notification : [],
+      dataVideo : [],
+      short: []
     }
   }
 }

@@ -11,10 +11,20 @@
                 :channel="videoPlayer.channel"
                 :dataVideo="list_video"
                 :playing.sync="playingChild"
+                :user.sync="userChild"
+                :authorView.sync = "selfAuthorView"
                 ></VideoPlayer>
             </div>
         </template>
         <template v-else>
+            <div class="user" v-if="(idSelect == -1)">
+                <ChannelYoutube 
+                    :currentUser="user.author"
+                    :channel="user"
+                    :playing.sync ="playingChild">
+                </ChannelYoutube>
+            </div>
+
             <div class="page-home" v-if="(idSelect == 0)">
                 <div class="categories">
                     <div class="category" v-for="i in tag.length > 7 ? 7 : tag.length" :key="i" :class="[{categoryActive : index == i-1}]" @click="filterbyTag(i-1,tag[i-1])">
@@ -76,7 +86,7 @@
                 <p class="title-subscription">This year</p>
                 <template v-if="(length > 5)">
                 <div class="rows" v-for="idx in Math.ceil(this.length/4)" v-bind:key="idx">
-                    <div v-for="i in 5" :key="i">
+                    <div v-for="i in 5" :key="i" @click="playVideo(data[i-1+(idx-1)*5].author,data[i-1+(idx-1)*5].name)">
                         <VideoSubscript        
                         :name = "data[i-1+(idx-1)*5].name"
                         :image = "data[i-1+(idx-1)*5].image"
@@ -92,7 +102,7 @@
                 </div>
                 </template>
                 <div class="rows" v-else>
-                    <div v-for="i in 5" :key="i">
+                    <div v-for="i in 5" :key="i" @click="playVideo(data[i-1+(idx-1)*5].author,data[i-1+(idx-1)*5].name)">
                         <VideoSubscript          
                         :name = "data[i-1].name"
                         :image = "data[i-1].image"
@@ -108,10 +118,11 @@
                 </div>
             </div>
 
-            <div class="channel" v-if="(idSelect>=8 && idSelect <= 10)">
+            <div class="channel" v-if="(idSelect == 3)">
                 <ChannelYoutube 
                     :channel="author"
-                    :playing.sync ="playingChild">
+                    :playing.sync ="playingChild"
+                    :user.sync="userChild">
                 </ChannelYoutube>
             </div>
             <div class="page-else" v-else>
@@ -137,10 +148,22 @@
                 playingChild : {
                     author : '',
                     video : ''
-                }
+                },
+                userChild : {},
+                selfAuthorView : ''
             }
         },
         props:{
+            user : {
+                name : String,
+                avatar : String,
+                check : Boolean,
+                username : String,
+                subscribers : String,
+                subscribe : Array,
+                videos : Array,
+                banner : String
+            },
             author : {
                 avatar : String,
                 author : String,
@@ -174,11 +197,18 @@
                     subscribers : String
                 }
             },
+            authorView : String
         },
         watch : {
             playingChild : function(){
                 this.$emit('update:playing',this.playingChild)
                 this.playVideo(this.playingChild.author,this.playingChild.video)
+            },
+            userChild : function(){
+                this.$emit('update:user',this.userChild)
+            },
+            selfAuthorView : function(){
+                this.$emit('update:authorView',this.selfAuthorView)
             }
         },
         methods:{
@@ -203,6 +233,9 @@
                 self.list_video.push(item)
             })
             this.list_video = this.list_video.sort( () => .5 - Math.random());
+            for(var key in this.user){ //Copy user to childUser
+                this.userChild[key] = this.user[key]
+            }
         },
         components : {
             VideoComponent,

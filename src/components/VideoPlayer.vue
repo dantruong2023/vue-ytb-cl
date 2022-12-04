@@ -4,12 +4,12 @@
            <iframe class="video" :src="iframe" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
            <h2 style="width : 100%; text-align: left; font-weight: 550;">{{ compact_title }}</h2>
            <div class="owner">
-                <img class="avatar" :src="link_image" alt="">
-                <span class="author">{{channel.author}}</span>
+                <img class="avatar" :src="link_image" alt="" @click="viewAuthor()" style="cursor:pointer;">
+                <span class="author" @click="viewAuthor()" style="cursor:pointer;">{{channel.author}}</span>
                 <div class="check"  v-if="channel.check">
                     <i class="ti-check"></i>
                 </div>
-                <button class="btn btn-subscribe">Subscribe</button>
+                <button class="btn btn-subscribe" v-if="(user.author !== channel.author)" :class="[{subscribed : (isSubscribe == 'Subscribed')}]" @click="follow()">{{isSubscribe}}</button>
                 <br> <br>
                 <span class="sub blur-text">{{channel.subscribers}} subscribers</span>
            </div>
@@ -35,6 +35,22 @@
 <script>
 export default{
     name : 'VideoPlayer',
+    data(){
+        return {
+            isSubscribe : 'Subscribe',
+            selfUser : {
+                
+            }
+        }
+    },
+    created : function(){
+        for(var key in this.user){
+            this.selfUser[key] = this.user[key]
+        }
+        if(this.selfUser.subscribe.includes(this.channel.author)){
+            this.isSubscribe = 'Subscribed'
+        }
+    },
     props:{
         iframe : String,
         title : String,
@@ -51,7 +67,18 @@ export default{
         playing: {
             author : String,
             video : String
-        }
+        },
+        user : {
+            author : String,
+            avatar : String,
+            check : Boolean,
+            username : String,
+            subscribers : String,
+            subscribe : Array,
+            videos : Array,
+            banner : String
+        },
+        authorView : String
     },
     methods: {
         link_video : function(value){
@@ -67,6 +94,20 @@ export default{
                 video : videoName
             }
             this.$emit('update:playing',playnow)
+        },
+        follow : function(){
+            this.isSubscribe = this.isSubscribe=='Subscribe'?'Subscribed':'Subscribe'
+            if(this.isSubscribe == 'Subscribed'){
+                if(this.selfUser.subscribe.indexOf(this.channel.author) == -1) this.selfUser.subscribe.push(this.channel.author)
+            }
+            else {
+                if(this.selfUser.subscribe.indexOf(this.channel.author) != -1){
+                    this.selfUser.subscribe.splice(this.selfUser.subscribe.indexOf(this.channel.author),1)
+                }
+            }
+        },
+        viewAuthor : function(){
+            this.$emit('update:authorView',this.channel.author)
         }
     },
     computed : {
@@ -78,6 +119,12 @@ export default{
             return '/assets/img/avatar/' + this.channel.avatar
         },
         
+    },
+    watch : {
+        selfUser : function(){
+            console.log("Update user video-player")
+            this.$emit('update:user',this.selfUser)
+        }
     }
 }
 </script>
@@ -221,6 +268,11 @@ i.ti-check{
 
 .btn-subscribe{
     left : 30%
+}
+
+.subscribed{
+    background-color: #333 !important;
+    color : #fff !important;
 }
 
 button.ti-share{

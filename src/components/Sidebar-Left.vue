@@ -1,6 +1,6 @@
 <template>
 <div class="sidebar">
-    <div class="home" v-bind:class="[{active : selected === 0}]" @click="change(0)">
+    <div class="home" v-bind:class="[{active : selected === 0 }]" @click="change(0)">
         <i class="ti-home"></i>
         <p>Home</p>
     </div>
@@ -12,7 +12,7 @@
         <i class="ti-user"></i>
         <p>Subscriptions</p>
     </div>
-    <div class="library" v-bind:class="[{active : selected === 3}]" @click="change(3)">
+    <div class="library" v-bind:class="[{active : selected === 99}]" @click="change(99)">
         <i class="ti-gallery"></i>
         <p>Library</p>
     </div>

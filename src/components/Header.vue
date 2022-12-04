@@ -13,8 +13,8 @@
     </div>
 
     <div class="user">
-      <div class="img">
-        <img src="/assets/img/avatar/avatar.jpg" alt="" width="32px" height="32px">
+      <div class="img" @click="user()">
+        <img :src="link_image(avatar)" alt="" width="32px" height="32px">
       </div>
       <!-- Notifications -->
       <i title="Notifications" class="ti-bell" :class="[{active : formNoti},{formShow : formNoti == true}]" @click="show('noti')">
@@ -31,7 +31,7 @@
               <p class="content-time">{{ item.time }}</p>
             </div>
             <div class="video">
-              <img :src="link_video(item.img)" alt="" v-if="item.img!=''">
+              <img :src="link_video(item.img)" alt="" v-if="item.img!=''" >
             </div> 
           </div>
         </div>
@@ -61,7 +61,8 @@ export default {
     isExtend : Boolean,
     notification : Array,
     idSelect : Number,
-    showSidebar : Boolean
+    showSidebar : Boolean,
+    avatar : String
   },
   data(){
     return {
@@ -80,6 +81,9 @@ export default {
     home : function(){
         this.$emit('update:idSelect',0)
         this.$emit('update:showSidebar',true)
+    },
+    user : function(){
+      this.$emit('update:idSelect',-1)
     },
     show : function(value){
       if(value == 'upload'){
@@ -264,7 +268,7 @@ i.ti-menu{
 }
 .user div.img img{
   position: absolute;
-  top : 50%;
+  top : 45%;
   left : 50%;
   transform: translateY(-50%) translateX(-50%);
   right : 0;

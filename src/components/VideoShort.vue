@@ -169,6 +169,4 @@
 .action div p{
     color : #fff;
 }
-
-
 </style>
