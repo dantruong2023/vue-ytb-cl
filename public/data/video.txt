@@ -2,7 +2,7 @@
     {
         "name" :"Bật chế độ bay lên - Bình Gold",
         "image"  : "bcdbl.jpg",
-        "avatar"  : "binhgold.jfif",
+        "avatar"  : "meme.jpg",
         "view" :"985K" ,
         "time" :"2 months",
         "author" : "Đan Trường",
